@@ -38,7 +38,7 @@ ground_art = pygame.image.load("anger_art/ground.png").convert_alpha()
 log_long_art = pygame.image.load("anger_art/log_long.png").convert_alpha()
 log_short_art = pygame.image.load("anger_art/log_short.png").convert_alpha()
 slingshot_art = pygame.image.load("anger_art/slingshot.png").convert_alpha()
-
+hedgehog_art = pygame.image.load("anger_art/hedgehog.png").convert_alpha()
 
 world = world(gravity=(0,-10), doSleep=True)
 
@@ -47,14 +47,20 @@ birds = []
 
 ground = Thing(world,ground_art,(5,0),0,BOX,static=True)
 things.append(ground)
-slingshot = Slingshot(slingshot_art,(1.5,1.3),world)
-things.append(slingshot)
-basic = Bird(world,basic_art,(2.2,5),-10,CIRCLE,scale=1)
+slingshot = Slingshot(slingshot_art,(1.5,1.4),world)
+basic = Bird(world,basic_art,(2.2,5),0)
 things.append(basic)
 birds.append(basic)
-bluebird = Bird(world,bluebird_art,(4,5),-10,CIRCLE)
+redwing = Bird(world,redwing_art,(.5,.5),0)
+things.append(redwing)
+birds.append(redwing)
+bluebird = Bird(world,bluebird_art,(1,.5),0)
 things.append(bluebird)
 birds.append(bluebird)
+hedgehog_art = pygame.transform.flip(hedgehog_art,True,False)
+hedgehog = Hog(world,hedgehog_art,(8.5,3.2),0)
+things.append(hedgehog)
+
 
 def draw_sling(color,slingshot):
     if in_sling!=None:
@@ -140,8 +146,7 @@ while running:
         slingshot.draw(screen)
         draw_sling(SLING_COLOR,slingshot)
         for each in things:
-            if each != slingshot:
-                each.draw(screen)
+            each.draw(screen)
     elif not art:
         screen.fill((0,0,0))
         for each in things:

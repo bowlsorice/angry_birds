@@ -23,7 +23,7 @@ class Thing():
             self.body = world.CreateDynamicBody(position=(pos),
                 fixedRotation=False,angle=angle)
         if shape == CIRCLE:
-                radius = self.img.get_rect().width*.8/2/PPM
+                radius = self.img.get_rect().width*.6/2/PPM
                 self.fix = self.body.CreateCircleFixture(radius=radius,
                     density=5,friction=0.3,restitution=.5)
                 self.radius = radius
@@ -55,13 +55,15 @@ class Thing():
             pygame.draw.line(screen,(0,0,0),pos,point)
 
 class Bird(Thing):
+    def __init__(self,world,img,pos,angle):
+        super().__init__(world,img,pos,angle,CIRCLE)
     def launch(self,screen,world,slingshot):
         posa = self.body.position
         posb = slingshot.rect.centerx,slingshot.rect.y
         posb = posb[0]/PPM, (600-posb[1])/PPM
         length = (((posb[0]-posa[0])**2+
             (posb[1]-posa[1])**2)**(1/2))
-        reduct = 10#/length
+        reduct = 8#/length
         vector = ((posb[0]-posa[0])*reduct,
             (posb[1]-posa[1])*reduct)
         self.body.ApplyLinearImpulse(vector,self.body.position,True)
@@ -88,3 +90,10 @@ class Slingshot():
             int(600-self.anchora.position[1]*PPM)),5)
         pygame.draw.circle(screen,WHITE,(int(self.anchorb.position[0]*PPM),
             int(600-self.anchorb.position[1]*PPM)),5)
+
+class Hog(Thing):
+    def __init__(self,world,img,pos,angle):
+        super().__init__(world,img,pos,angle,CIRCLE)
+        self.health = 500
+        self.puff =  pygame.image.load("anger_art/puff.png").convert_alpha()
+    #def getHit? hmmm
