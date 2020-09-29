@@ -2,7 +2,7 @@ import pygame
 import random
 import Box2D
 from Box2D.b2 import (world, polygonShape, circleShape,
-    staticBody, dynamicBody, pi, globals)
+    staticBody, dynamicBody, pi, globals, contact)
 
 
 from anger_sprites import *
@@ -19,7 +19,7 @@ SLING_COLOR = MAROON
 
 game = True
 running = True
-art = True
+art = False
 
 rotate = 0
 
@@ -44,22 +44,20 @@ world = world(gravity=(0,-10), doSleep=True)
 
 things = []
 birds = []
+hogs = []
 
 ground = Thing(world,ground_art,(5,0),0,BOX,static=True)
 things.append(ground)
 slingshot = Slingshot(slingshot_art,(1.5,1.4),world)
 basic = Bird(world,basic_art,(2.2,5),0)
-things.append(basic)
 birds.append(basic)
 redwing = Bird(world,redwing_art,(.5,.5),0)
-things.append(redwing)
 birds.append(redwing)
 bluebird = Bird(world,bluebird_art,(1,.5),0)
-things.append(bluebird)
 birds.append(bluebird)
 hedgehog_art = pygame.transform.flip(hedgehog_art,True,False)
 hedgehog = Hog(world,hedgehog_art,(8.5,3.2),0)
-things.append(hedgehog)
+hogs.append(hedgehog)
 
 
 def draw_sling(color,slingshot):
@@ -110,15 +108,25 @@ while running:
         elif event.type == pygame.MOUSEBUTTONUP and clicked:
             clicked = False
             in_sling.launch(screen,world,slingshot)
-            birds.remove(in_sling)
+            in_sling.shot = True
             in_sling = None
             time_shot = pygame.time.get_ticks()
 
     if in_sling == None:
-        if len(birds)>0 and pygame.time.get_ticks()-time_shot >= 1000:
-            birds[0].load(world,slingshot)
-            in_sling = birds[0]
-            birds[0].body.awake = False
+        birds_not_shot = 0
+        for bird in birds:
+            if not bird.shot:
+                birds_not_shot+=1
+        if birds_not_shot>0 and pygame.time.get_ticks()-time_shot >= 1000:
+            i = 0
+            while in_sling == None:
+                if birds[i].shot==False:
+                    birds[i].load(world,slingshot)
+                    in_sling = birds[i]
+                    birds[i].body.awake = False
+                    birds[i].shot = True
+                else:
+                    i+=1
     else:
         if clicked:
             posa = pygame.mouse.get_pos()
@@ -134,12 +142,29 @@ while running:
                 move = (posb[0]-(posb[0]-posa[0])*reduct,
                     posb[1]-(posb[1]-posa[1])*reduct)
                 in_sling.body.transform = (move,in_sling.body.angle)
-
         else:
             in_sling.body.awake=False
 
-
     world.Step(TIME_STEP, 10, 10) #always do before drawing!!
+
+    for each in hogs:
+        v = each.body.linearVelocity
+        v = (v[0]**2+v[1]**2)**(1/2)
+        momentum = v*each.body.mass
+        #print(momentum)
+        if len(each.body.contacts)>0:
+            for contact in each.body.contacts:
+                other = contact.other
+                other_v = other.linearVelocity
+                other_v = (other_v[0]**2+other_v[1]**2)**(1/2)
+                other_momentum = other_v*other.mass
+                if ((other_momentum>2 or momentum>2)
+                    and abs(momentum-other_momentum)>2):
+                    print(abs(momentum-other_momentum))
+                    print("hit")
+                    each.health-=1
+                    print(each.health)
+
     if art:
         screen.fill((147,211,246))
         screen.blit(background_art,(0,0))
@@ -147,11 +172,23 @@ while running:
         draw_sling(SLING_COLOR,slingshot)
         for each in things:
             each.draw(screen)
+        for each in birds:
+            each.draw(screen)
+        for each in hogs:
+            each.draw(screen)
+
     elif not art:
         screen.fill((0,0,0))
         for each in things:
             each.draw_shape(screen)
+        for each in birds:
+            each.draw_shape(screen)
+        for each in hogs:
+            each.draw_shape(screen)
         draw_sling(WHITE,slingshot)
+
+    #print(world.contacts[0].fixtureA.body)
+    #print(hedgehog.body.contacts)
 
     pygame.display.flip()
     clock.tick(FPS)

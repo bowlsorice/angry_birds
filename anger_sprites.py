@@ -57,6 +57,7 @@ class Thing():
 class Bird(Thing):
     def __init__(self,world,img,pos,angle):
         super().__init__(world,img,pos,angle,CIRCLE)
+        self.shot = False
     def launch(self,screen,world,slingshot):
         posa = self.body.position
         posb = slingshot.rect.centerx,slingshot.rect.y
@@ -94,6 +95,10 @@ class Slingshot():
 class Hog(Thing):
     def __init__(self,world,img,pos,angle):
         super().__init__(world,img,pos,angle,CIRCLE)
-        self.health = 500
+        self.health = 10
         self.puff =  pygame.image.load("anger_art/puff.png").convert_alpha()
+    def drawPuff(self,screen):
+        rect = self.puff.get_rect(
+            center=(self.body.position[0]*PPM,600-self.body.position[1]*PPM))
+        screen.blit(self.puff,rect.topleft)
     #def getHit? hmmm
