@@ -53,6 +53,9 @@ class Thing():
             y = pos[1]-radius*math.sin(self.body.angle)
             point = x,y
             pygame.draw.line(screen,(0,0,0),pos,point)
+    def getV(self):
+        return (self.body.linearVelocity[0],self.body.linearVelocity[1])
+
 
 class Bird(Thing):
     def __init__(self,world,img,pos,angle):
@@ -95,10 +98,10 @@ class Slingshot():
 class Hog(Thing):
     def __init__(self,world,img,pos,angle):
         super().__init__(world,img,pos,angle,CIRCLE)
-        self.health = 10
         self.puff =  pygame.image.load("anger_art/puff.png").convert_alpha()
+        self.dead  = False
     def drawPuff(self,screen):
         rect = self.puff.get_rect(
-            center=(self.body.position[0]*PPM,600-self.body.position[1]*PPM))
+            center=(self.pos_of[0]*PPM,600-self.pos_of[1]*PPM))
         screen.blit(self.puff,rect.topleft)
     #def getHit? hmmm

@@ -19,7 +19,7 @@ SLING_COLOR = MAROON
 
 game = True
 running = True
-art = False
+art = True
 
 rotate = 0
 
@@ -56,7 +56,7 @@ birds.append(redwing)
 bluebird = Bird(world,bluebird_art,(1,.5),0)
 birds.append(bluebird)
 hedgehog_art = pygame.transform.flip(hedgehog_art,True,False)
-hedgehog = Hog(world,hedgehog_art,(8.5,3.2),0)
+hedgehog = Hog(world,hedgehog_art,(8.5,3.2),0) #8.5,3.2
 hogs.append(hedgehog)
 
 
@@ -145,25 +145,38 @@ while running:
         else:
             in_sling.body.awake=False
 
-    world.Step(TIME_STEP, 10, 10) #always do before drawing!!
-
-    for each in hogs:
-        v = each.body.linearVelocity
-        v = (v[0]**2+v[1]**2)**(1/2)
-        momentum = v*each.body.mass
-        #print(momentum)
-        if len(each.body.contacts)>0:
+    for each in hogs: #check for actual fixture collision, rather than AABB
+        if not each.dead:
+            v1 = each.getV()
+            v1 = (v1[0]**2+v1[1]**2)**(1/2) #correct up to here at leastb
+            each.lastv = v1
+            ke = (each.lastv**2)*each.body.mass*0.5
+            each.ke_pass = False
             for contact in each.body.contacts:
                 other = contact.other
                 other_v = other.linearVelocity
                 other_v = (other_v[0]**2+other_v[1]**2)**(1/2)
-                other_momentum = other_v*other.mass
-                if ((other_momentum>2 or momentum>2)
-                    and abs(momentum-other_momentum)>2):
-                    print(abs(momentum-other_momentum))
-                    print("hit")
-                    each.health-=1
-                    print(each.health)
+                other_ke = (other_v**2)*other.mass*0.5
+                ke_collide = ke+other_ke
+                if ke_collide>10:
+                    each.ke_pass = True
+
+
+    world.Step(TIME_STEP, 10, 10) #always do before drawing!!
+
+    for each in hogs:
+        if not each.dead:
+            v  = each.getV()
+            v = (v[0]**2+v[1]**2)**(1/2)
+            print(abs(v-each.lastv))
+            if abs(v-each.lastv)>1: #and compare ke?
+                print("hit")
+                each.dead = True
+                each.time_of = pygame.time.get_ticks()
+                each.pos_of = each.body.position
+                world.DestroyBody(each.body)
+
+
 
     if art:
         screen.fill((147,211,246))
@@ -175,7 +188,13 @@ while running:
         for each in birds:
             each.draw(screen)
         for each in hogs:
-            each.draw(screen)
+            if each.dead:
+                if pygame.time.get_ticks()-each.time_of<250:
+                    each.drawPuff(screen)
+                else:
+                    hogs.remove(each)
+            elif not each.dead:
+                each.draw(screen)
 
     elif not art:
         screen.fill((0,0,0))
@@ -184,11 +203,12 @@ while running:
         for each in birds:
             each.draw_shape(screen)
         for each in hogs:
-            each.draw_shape(screen)
+            if each.dead:
+                if pygame.time.get_ticks()-each.time_of>=250:
+                    hogs.remove(each)
+            elif not each.dead:
+                each.draw_shape(screen)
         draw_sling(WHITE,slingshot)
-
-    #print(world.contacts[0].fixtureA.body)
-    #print(hedgehog.body.contacts)
 
     pygame.display.flip()
     clock.tick(FPS)
