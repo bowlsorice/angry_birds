@@ -15,6 +15,7 @@ WHITE = (255,255,255)
 MAROON = (128,0,0)
 BLACK = (0,0,0)
 SLING_COLOR = MAROON
+TRANS = 0,0
 
 
 game = True
@@ -46,7 +47,7 @@ things = []
 birds = []
 hogs = []
 
-ground = Thing(world,ground_art,(5,0),0,BOX,static=True)
+ground = Thing(world,ground_art,(10,0),0,BOX,static=True)
 things.append(ground)
 slingshot = Slingshot(slingshot_art,(1.5,1.4),world)
 basic = Bird(world,basic_art,(2.2,5),0)
@@ -60,21 +61,24 @@ hedgehog = Hog(world,hedgehog_art,(8.5,3.2),0) #8.5,3.2
 hogs.append(hedgehog)
 
 
-def draw_sling(color,slingshot):
+def draw_sling(color,slingshot,translation):
     if in_sling!=None:
-        pygame.draw.line(screen,color,(slingshot.anchora.position[0]*PPM,
-            600-slingshot.anchora.position[1]*PPM),
-            (in_sling.body.position[0]*PPM,
-            600-in_sling.body.position[1]*PPM),4)
-        pygame.draw.line(screen,color,(slingshot.anchorb.position[0]*PPM,
-            600-slingshot.anchorb.position[1]*PPM),
-            (in_sling.body.position[0]*PPM,
-            600-in_sling.body.position[1]*PPM),4)
+        pygame.draw.line(screen,color,
+            ((slingshot.anchora.position[0]-translation[0])*PPM,
+            600-(slingshot.anchora.position[1]-translation[1])*PPM),
+            ((in_sling.body.position[0]-translation[0])*PPM,
+            600-(in_sling.body.position[1]-translation[1])*PPM),4)
+        pygame.draw.line(screen,color,
+            ((slingshot.anchorb.position[0]-translation[0])*PPM,
+            600-(slingshot.anchorb.position[1]-translation[1])*PPM),
+            ((in_sling.body.position[0]-translation[0])*PPM,
+            600-(in_sling.body.position[1]-translation[1])*PPM),4)
     else:
-        pygame.draw.line(screen,color,(slingshot.anchora.position[0]*PPM,
-            600-slingshot.anchora.position[1]*PPM),
-            (slingshot.anchorb.position[0]*PPM,
-            600-slingshot.anchorb.position[1]*PPM),4)
+        pygame.draw.line(screen,color,
+            ((slingshot.anchora.position[0]-translation[0])*PPM,
+            600-(slingshot.anchora.position[1]-translation[1])*PPM),
+            ((slingshot.anchorb.position[0]-translation[0])*PPM,
+            600-(slingshot.anchorb.position[1]-translation[1])*PPM),4)
 
 
 def make_log(pos,rotation,size):
@@ -101,13 +105,13 @@ while running:
             running = False
         elif event.type == pygame.MOUSEBUTTONDOWN:
             pos = pygame.mouse.get_pos()
-            pos = pos[0]/PPM,(600-pos[1])/PPM
+            pos = (pos[0]/PPM)+TRANS[0],(600-pos[1])/PPM+TRANS[1]
             if in_sling != None:
                 if in_sling.fix.TestPoint(pos):
                     clicked = True
         elif event.type == pygame.MOUSEBUTTONUP and clicked:
             clicked = False
-            in_sling.launch(screen,world,slingshot)
+            in_sling.launch(screen,world,slingshot,TRANS)
             in_sling.shot = True
             in_sling = None
             time_shot = pygame.time.get_ticks()
@@ -130,8 +134,8 @@ while running:
     else:
         if clicked:
             posa = pygame.mouse.get_pos()
-            posa = posa[0]/PPM,(600-posa[1])/PPM
-            posb = slingshot.rect.centerx,slingshot.rect.y
+            posa = (posa[0]/PPM)+TRANS[0],(600-posa[1])/PPM+TRANS[1]
+            posb = slingshot.rect.centerx,slingshot.rect.y+10
             posb = posb[0]/PPM, (600-posb[1])/PPM
             length = (((posb[0]-posa[0])**2+
                 (posb[1]-posa[1])**2)**(1/2))
@@ -168,9 +172,7 @@ while running:
         if not each.dead:
             v  = each.getV()
             v = (v[0]**2+v[1]**2)**(1/2)
-            print(abs(v-each.lastv))
-            if abs(v-each.lastv)>1: #and compare ke?
-                print("hit")
+            if abs(v-each.lastv)>1: 
                 each.dead = True
                 each.time_of = pygame.time.get_ticks()
                 each.pos_of = each.body.position
@@ -179,36 +181,36 @@ while running:
 
 
     if art:
-        screen.fill((147,211,246))
-        screen.blit(background_art,(0,0))
-        slingshot.draw(screen)
-        draw_sling(SLING_COLOR,slingshot)
+        screen.fill((128,216,255))
+        screen.blit(background_art,(-1*TRANS[0]*PPM,TRANS[1]*PPM))
+        slingshot.draw(screen,TRANS)
+        draw_sling(SLING_COLOR,slingshot,TRANS)
         for each in things:
-            each.draw(screen)
+            each.draw(screen,TRANS)
         for each in birds:
-            each.draw(screen)
+            each.draw(screen,TRANS)
         for each in hogs:
             if each.dead:
                 if pygame.time.get_ticks()-each.time_of<250:
-                    each.drawPuff(screen)
+                    each.drawPuff(screen,TRANS)
                 else:
                     hogs.remove(each)
             elif not each.dead:
-                each.draw(screen)
+                each.draw(screen,TRANS)
 
     elif not art:
         screen.fill((0,0,0))
         for each in things:
-            each.draw_shape(screen)
+            each.draw_shape(screen,TRANS)
         for each in birds:
-            each.draw_shape(screen)
+            each.draw_shape(screen,TRANS)
         for each in hogs:
             if each.dead:
                 if pygame.time.get_ticks()-each.time_of>=250:
                     hogs.remove(each)
             elif not each.dead:
-                each.draw_shape(screen)
-        draw_sling(WHITE,slingshot)
+                each.draw_shape(screen,TRANS)
+        draw_sling(WHITE,slingshot,TRANS)
 
     pygame.display.flip()
     clock.tick(FPS)
