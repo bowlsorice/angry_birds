@@ -45,8 +45,9 @@ class Thing():
             600-((self.body.position[1]-translation[1])*PPM))
         if self.shape == BOX:
             vertices = [(self.body.transform * v) #here!! STILL BAD
-                * PPM for v in self.fix.shape.vertices]
-            vertices = [(v[0], 600-v[1]) for v in vertices]
+                for v in self.fix.shape.vertices]
+            vertices = [((v[0]-translation[0])*PPM,
+                600-(v[1]-translation[1])*PPM) for v in vertices]
             pygame.draw.polygon(screen,WHITE,vertices)
         elif self.shape == CIRCLE:
             radius = int(self.radius*PPM)
@@ -77,7 +78,7 @@ class Bird(Thing):
     def load(self,world,slingshot):
         pos = (slingshot.rect.centerx,slingshot.rect.y+10)
         pos = (pos[0]/PPM),((600-pos[1])/PPM)
-        self.body.transform = (pos,self.body.angle)
+        self.body.transform = (pos,0)
 
 class Slingshot():
     def __init__(self,img,pos,world,scale=1):
@@ -109,4 +110,10 @@ class Hog(Thing):
             center=((self.pos_of[0]-translation[0])*PPM,
             600-(self.pos_of[1]-translation[1])*PPM))
         screen.blit(self.puff,rect.topleft)
-    #def getHit? hmmm
+
+class Level():
+    def __init__(self,logs,base,hogs,birds):
+        self.base = base
+        self.logs = logs
+        self.hogs = hogs
+        self.birds = birds
