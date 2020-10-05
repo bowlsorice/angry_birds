@@ -13,8 +13,9 @@ PPM = 100
 
 class Thing():
     def __init__(self,world,img,pos,rotation,
-        shape,static=False,scale=1):
+        shape,static=False,scale=1,density=1):
         img = pygame.transform.rotozoom(img,0,scale)
+        self.dead  = False
         self.img = img
         angle = rotation * (pi/180)
         self.shape = shape
@@ -26,13 +27,13 @@ class Thing():
         if shape == CIRCLE:
                 radius = self.img.get_rect().width*.6/2/PPM
                 self.fix = self.body.CreateCircleFixture(radius=radius,
-                    density=5,friction=0.3,restitution=.5)
+                    density=density,friction=0.3,restitution=.5)
                 self.radius = radius
         elif shape == BOX:
                 dimensions = (self.img.get_rect().width/(2*PPM),
                     self.img.get_rect().height/(2*PPM))
                 self.fix = self.body.CreatePolygonFixture(box=dimensions,
-                    density=4,friction=0.3,restitution=.5)
+                    density=density,friction=0.3,restitution=.5)
     def draw(self,screen,translation):
         angle = self.body.angle * (180/pi)
         r_img = pygame.transform.rotate(self.img,angle)
@@ -63,7 +64,7 @@ class Thing():
 
 class Bird(Thing):
     def __init__(self,world,img,pos,angle):
-        super().__init__(world,img,pos,angle,CIRCLE)
+        super().__init__(world,img,pos,angle,CIRCLE,density=4)
         self.shot = False
     def launch(self,screen,world,slingshot,translation):
         posa = self.body.position
@@ -102,14 +103,15 @@ class Slingshot():
 
 class Hog(Thing):
     def __init__(self,world,img,pos,angle):
-        super().__init__(world,img,pos,angle,CIRCLE)
-        self.puff =  pygame.image.load("anger_art/puff.png").convert_alpha()
-        self.dead  = False
-    def drawPuff(self,screen,translation):
-        rect = self.puff.get_rect(
+        super().__init__(world,img,pos,angle,CIRCLE,density=4)
+        self.puffs = [pygame.image.load("anger_art/puff1.png").convert_alpha(),
+            pygame.image.load("anger_art/puff2.png").convert_alpha(),
+            pygame.image.load("anger_art/puff3.png").convert_alpha()]
+    def drawPuff(self,screen,translation,frame):
+        rect = self.puffs[frame].get_rect(
             center=((self.pos_of[0]-translation[0])*PPM,
             600-(self.pos_of[1]-translation[1])*PPM))
-        screen.blit(self.puff,rect.topleft)
+        screen.blit(self.puffs[frame],rect.topleft)
 
 class Level():
     def __init__(self,logs,base,hogs,birds):
