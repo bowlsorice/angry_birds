@@ -15,7 +15,6 @@ class Thing():
     def __init__(self,world,img,pos,rotation,
         shape,static=False,scale=1,density=1):
         img = pygame.transform.rotozoom(img,0,scale)
-        self.dead  = False
         self.img = img
         angle = rotation * (pi/180)
         self.shape = shape
@@ -105,6 +104,7 @@ class Slingshot():
 
 class Hog(Thing):
     def __init__(self,world,img,pos,angle):
+        self.dead  = False
         super().__init__(world,img,pos,angle,CIRCLE,density=4)
         self.puffs = [pygame.image.load("anger_art/puff1.png").convert_alpha(),
             pygame.image.load("anger_art/puff2.png").convert_alpha(),
@@ -114,6 +114,20 @@ class Hog(Thing):
             center=((self.pos_of[0]-translation[0])*PPM,
             600-(self.pos_of[1]-translation[1])*PPM))
         screen.blit(self.puffs[frame],rect.topleft)
+class Log(Thing):
+    def __init__(self,world,img,pos,angle,scale=1):
+        self.dead = False
+        super().__init__(world,img,pos,angle,BOX,density=1,scale=scale)
+        self.shatters = [
+            pygame.image.load("anger_art/shatter1.png").convert_alpha(),
+            pygame.image.load("anger_art/shatter2.png").convert_alpha(),
+            pygame.image.load("anger_art/shatter3.png").convert_alpha()]
+    def drawShatter(self,screen,translation,frame):
+        rect = self.shatters[frame].get_rect(
+            center=((self.pos_of[0]-translation[0])*PPM,
+            600-(self.pos_of[1]-translation[1])*PPM))
+        screen.blit(self.shatters[frame],rect.topleft)
+
 
 class Level():
     def __init__(self,logs,base,hogs,birds):

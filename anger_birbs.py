@@ -1,4 +1,3 @@
-#FIX HOG DEATH BUG
 
 import pygame
 import Box2D
@@ -46,11 +45,11 @@ world = world(gravity=(0,-10), doSleep=True)
 
 def make_log(pos,rotation,size):
     if size == 0:
-        a_log = Thing(world,log_short_art,pos,rotation,BOX,scale=1)
+        a_log = Log(world,log_short_art,pos,rotation,BOX)
     elif size == 1:
-        a_log = Thing(world,log_long_art,pos,rotation,BOX,scale=1)
+        a_log = Log(world,log_long_art,pos,rotation,BOX)
     elif size == 2:
-        a_log = Thing(world,log_looong_art,pos,rotation,BOX,scale=1)
+        a_log = Log(world,log_looong_art,pos,rotation,BOX)
     return a_log
 
 
@@ -82,7 +81,7 @@ def make_lvl1():
 
     lvl1 = Level(logs,base,hogs,birds)
     return lvl1
-    
+
 
 def make_lvl2():
     birds = []
@@ -273,10 +272,17 @@ while running:
         for each in level.birds:
             each.draw(screen,TRANS)
         for each in level.logs:
-            if not each.dead:
+            if each.dead:
+                if pygame.time.get_ticks()-each.time_of<100:
+                    each.drawShatter(screen,TRANS,0)
+                elif pygame.time.get_ticks()-each.time_of<200:
+                    each.drawShatter(screen,TRANS,1)
+                elif pygame.time.get_ticks()-each.time_of<300:
+                    each.drawShatter(screen,TRANS,2)
+            elif not each.dead:
                 each.draw(screen,TRANS)
         for each in level.logs:
-            if each.dead:
+            if each.dead and pygame.time.get_ticks()-each.time_of>=300:
                 level.logs.remove(each)
         for each in level.hogs:
             if each.dead:
