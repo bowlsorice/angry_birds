@@ -1,7 +1,6 @@
 #FIX HOG DEATH BUG
 
 import pygame
-import random
 import Box2D
 from Box2D.b2 import (world, polygonShape, circleShape,
     staticBody, dynamicBody, pi, globals, contact)
@@ -54,6 +53,7 @@ def make_log(pos,rotation,size):
         a_log = Thing(world,log_looong_art,pos,rotation,BOX,scale=1)
     return a_log
 
+
 def make_lvl1():
     birds = []
     hogs = []
@@ -76,13 +76,13 @@ def make_lvl1():
 
     log_infos = [((-.5,1),90,1),((.5,1),90,1),((0,2),0,1),((-.3,3),90,0),
         ((.2,3),90,0),((0,3.5),0,0)]
-    logs = []
     for each in log_infos:
         a_log = make_log((each[0][0]+base,each[0][1]),each[1],each[2])
         logs.append(a_log)
 
     lvl1 = Level(logs,base,hogs,birds)
     return lvl1
+    
 
 def make_lvl2():
     birds = []
@@ -113,8 +113,9 @@ def make_lvl2():
     lvl2 = Level(logs,base,hogs,birds)
     return lvl2
 
+
 def draw_sling(color,slingshot,translation):
-    if in_sling!=None:
+    if in_sling is not None:
         pygame.draw.line(screen,color,
             ((slingshot.anchora.position[0]-translation[0])*PPM,
             600-(slingshot.anchora.position[1]-translation[1])*PPM),
@@ -138,7 +139,7 @@ time_shot = -1000
 clicked = False
 pan_to = False
 pan_back = False
-pan_stop = pygame.time.get_ticks()
+pan_stop = 0
 
 slingshot = Slingshot(slingshot_art,(1.5,1.4),world)
 ground = Thing(world,ground_art,(10,0),0,BOX,static=True)
@@ -172,7 +173,7 @@ while running:
         if birds_not_shot>0 and pygame.time.get_ticks()-time_shot >= 1000:
             i = 0
             while in_sling == None:
-                if level.birds[i].shot==False:
+                if not level.birds[i].shot:
                     level.birds[i].load(world,slingshot)
                     in_sling = level.birds[i]
                     level.birds[i].body.awake = False
@@ -203,7 +204,6 @@ while running:
             v1 = (v1[0]**2+v1[1]**2)**(1/2)
             each.lastv = v1
 
-
     world.Step(TIME_STEP/2, 5, 5)
     world.Step(TIME_STEP/2, 5, 5) #always do before drawing!!
 
@@ -224,6 +224,18 @@ while running:
                     each.pos_of = each.body.position
                     world.DestroyBody(each.body)
 
+    for each in level.hogs:
+        if each.body.position[1]<0:
+            level.hogs.remove(each)
+            world.DestroyBody(each.body)
+    for each in level.birds:
+        if each.body.position[1]<0:
+            level.birds.remove(each)
+            world.DestroyBody(each.body)
+    for each in level.logs:
+        if each.body.position[1]<0:
+            level.logs.remove(each)
+            world.DestroyBody(each.body)
 
     if (pan_back == False and TRANS[0]==level.base-5
         and pygame.time.get_ticks()-pan_stop>5000):
@@ -239,20 +251,6 @@ while running:
             if abs(v1)>.2:
                 pan_back = False
 
-    for each in level.hogs:
-        if each.body.position[1]<0:
-            level.hogs.remove(each)
-            world.DestroyBody(each.body)
-    for each in level.birds:
-        if each.body.position[1]<0:
-            level.birds.remove(each)
-            world.DestroyBody(each.body)
-    for each in level.logs:
-        if each.body.position[1]<0:
-            level.logs.remove(each)
-            world.DestroyBody(each.body)
-
-
     if pan_to:
         pan_back=False
         if TRANS[0]!=level.base-5:
@@ -265,7 +263,6 @@ while running:
             TRANS = TRANS[0]-.25,TRANS[1]
         else:
             pan_back = False
-
 
     if art:
         screen.fill((128,216,255))
@@ -283,7 +280,6 @@ while running:
                 level.logs.remove(each)
         for each in level.hogs:
             if each.dead:
-                print("here")
                 if pygame.time.get_ticks()-each.time_of<100:
                     each.drawPuff(screen,TRANS,0)
                 elif pygame.time.get_ticks()-each.time_of<200:
@@ -295,7 +291,6 @@ while running:
         for each in level.hogs:
             if each.dead and pygame.time.get_ticks()-each.time_of>=300:
                 level.hogs.remove(each)
-
 
     elif not art:
         screen.fill((0,0,0))
@@ -310,10 +305,7 @@ while running:
         for each in level.hogs:
             if each.dead and pygame.time.get_ticks()-each.time_of>=300:
                 level.hogs.remove(each)
-
         draw_sling(WHITE,slingshot,TRANS)
-
-
 
     pygame.display.flip()
     clock.tick(FPS)

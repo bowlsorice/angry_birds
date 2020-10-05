@@ -96,9 +96,11 @@ class Slingshot():
         screen.blit(self.img,(self.rect.x-(translation[0]*PPM),
             (self.rect.y+(translation[1]*PPM))))
     def draw_shape(self,screen):
-        pygame.draw.circle(screen,WHITE,(int((self.anchora.position[0]-translation[0])*PPM),
+        pygame.draw.circle(screen,WHITE,
+            (int((self.anchora.position[0]-translation[0])*PPM),
             int(600-(self.anchora.position[1]-translation[1])*PPM)),5)
-        pygame.draw.circle(screen,WHITE,(int((self.anchorb.position[0]-translation[0])*PPM),
+        pygame.draw.circle(screen,WHITE,
+            (int((self.anchorb.position[0]-translation[0])*PPM),
             int(600-(self.anchorb.position[1]-translation[1])*PPM)),5)
 
 class Hog(Thing):
