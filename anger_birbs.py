@@ -8,8 +8,7 @@ from Box2D.b2 import (world, polygonShape, circleShape,
 from anger_sprites import *
 
 PPM = 100
-VIEW = 1000,600
-FPS = 35
+FPS = 60
 TIME_STEP = 1.0/FPS
 WHITE = (255,255,255)
 MAROON = (128,0,0)
@@ -25,7 +24,9 @@ art = True
 
 pygame.init()
 
-screen = pygame.display.set_mode((VIEW[0],VIEW[1]),0,32)
+#screen = pygame.display.set_mode((VIEW[0],VIEW[1]),0,32)
+screen = pygame.display.set_mode((0,0),pygame.FULLSCREEN) # for fs, set TRANS[1] to 3
+screen.fill((128,216,255))
 pygame.display.set_caption("anger birbs")
 clock = pygame.time.Clock()
 
@@ -87,7 +88,7 @@ def make_lvl2():
     birds = []
     hogs = []
     logs = []
-    base = 8
+    base = 12
 
     basic = Bird(world,basic_art,(2.2,5),0)
     birds.append(basic)
@@ -117,20 +118,20 @@ def draw_sling(color,slingshot,translation):
     if in_sling is not None:
         pygame.draw.line(screen,color,
             ((slingshot.anchora.position[0]-translation[0])*PPM,
-            600-(slingshot.anchora.position[1]-translation[1])*PPM),
+            VIEW[1]-(slingshot.anchora.position[1]-translation[1])*PPM),
             ((in_sling.body.position[0]-translation[0])*PPM,
-            600-(in_sling.body.position[1]-translation[1])*PPM),4)
+            VIEW[1]-(in_sling.body.position[1]-translation[1])*PPM),4)
         pygame.draw.line(screen,color,
             ((slingshot.anchorb.position[0]-translation[0])*PPM,
-            600-(slingshot.anchorb.position[1]-translation[1])*PPM),
+            VIEW[1]-(slingshot.anchorb.position[1]-translation[1])*PPM),
             ((in_sling.body.position[0]-translation[0])*PPM,
-            600-(in_sling.body.position[1]-translation[1])*PPM),4)
+            VIEW[1]-(in_sling.body.position[1]-translation[1])*PPM),4)
     else:
         pygame.draw.line(screen,color,
             ((slingshot.anchora.position[0]-translation[0])*PPM,
-            600-(slingshot.anchora.position[1]-translation[1])*PPM),
+            VIEW[1]-(slingshot.anchora.position[1]-translation[1])*PPM),
             ((slingshot.anchorb.position[0]-translation[0])*PPM,
-            600-(slingshot.anchorb.position[1]-translation[1])*PPM),4)
+            VIEW[1]-(slingshot.anchorb.position[1]-translation[1])*PPM),4)
 
 
 in_sling = None
@@ -143,7 +144,7 @@ pan_stop = 0
 slingshot = Slingshot(slingshot_art,(1.5,1.4),world)
 ground = Thing(world,ground_art,(10,0),0,BOX,static=True)
 
-level = make_lvl1()
+level = make_lvl2()
 
 
 while running:
@@ -152,7 +153,7 @@ while running:
             running = False
         elif event.type == pygame.MOUSEBUTTONDOWN:
             pos = pygame.mouse.get_pos()
-            pos = (pos[0]/PPM)+TRANS[0],(600-pos[1])/PPM+TRANS[1]
+            pos = (pos[0]/PPM)+TRANS[0],(VIEW[1]-pos[1])/PPM+TRANS[1]
             if in_sling != None:
                 if in_sling.fix.TestPoint(pos):
                     clicked = True
@@ -163,6 +164,9 @@ while running:
             in_sling = None
             time_shot = pygame.time.get_ticks()
             pan_to = True
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                running = False
 
     if in_sling == None:
         birds_not_shot = 0
@@ -182,9 +186,9 @@ while running:
     else:
         if clicked:
             posa = pygame.mouse.get_pos()
-            posa = (posa[0]/PPM)+TRANS[0],(600-posa[1])/PPM+TRANS[1]
+            posa = (posa[0]/PPM)+TRANS[0],(VIEW[1]-posa[1])/PPM+TRANS[1]
             posb = slingshot.rect.centerx,slingshot.rect.y+10
-            posb = posb[0]/PPM, (600-posb[1])/PPM
+            posb = posb[0]/PPM, (VIEW[1]-posb[1])/PPM
             length = (((posb[0]-posa[0])**2+
                 (posb[1]-posa[1])**2)**(1/2))
             if length<=1.0:
@@ -236,7 +240,7 @@ while running:
             level.logs.remove(each)
             world.DestroyBody(each.body)
 
-    if (pan_back == False and TRANS[0]==level.base-5
+    if (pan_back == False and TRANS[0]==level.base-VIEW[0]/PPM//2
         and pygame.time.get_ticks()-pan_stop>5000):
         pan_back = True
         all = []
@@ -252,7 +256,7 @@ while running:
 
     if pan_to:
         pan_back=False
-        if TRANS[0]!=level.base-5:
+        if TRANS[0]!=level.base-VIEW[0]/PPM//2:
             TRANS = TRANS[0]+.25,TRANS[1]
         else:
             pan_to = False
@@ -264,7 +268,6 @@ while running:
             pan_back = False
 
     if art:
-        screen.fill((128,216,255))
         screen.blit(background_art,(-1*TRANS[0]*PPM,TRANS[1]*PPM))
         ground.draw(screen,TRANS)
         slingshot.draw(screen,TRANS)
@@ -315,4 +318,5 @@ while running:
 
     pygame.display.flip()
     clock.tick(FPS)
+print(pygame.display.get_wm_info())
 pygame.quit()

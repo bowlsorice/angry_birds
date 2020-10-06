@@ -9,6 +9,7 @@ BOX = 1
 WHITE = (255,255,255)
 BLACK = (0,0,0)
 PPM = 100
+VIEW = 1440,900
 
 
 class Thing():
@@ -37,17 +38,17 @@ class Thing():
         angle = self.body.angle * (180/pi)
         r_img = pygame.transform.rotate(self.img,angle)
         center = ((self.body.position[0]-translation[0])*PPM,
-            600-((self.body.position[1]-translation[1])*PPM))
+            VIEW[1]-((self.body.position[1]-translation[1])*PPM))
         rect = r_img.get_rect(center = center)
         screen.blit(r_img,(rect.topleft))
     def draw_shape(self,screen,translation):
         pos = ((self.body.position[0]-translation[0])*PPM,
-            600-((self.body.position[1]-translation[1])*PPM))
+            VIEW[1]-((self.body.position[1]-translation[1])*PPM))
         if self.shape == BOX:
             vertices = [(self.body.transform * v) #here!! STILL BAD
                 for v in self.fix.shape.vertices]
             vertices = [((v[0]-translation[0])*PPM,
-                600-(v[1]-translation[1])*PPM) for v in vertices]
+                VIEW[1]-(v[1]-translation[1])*PPM) for v in vertices]
             pygame.draw.polygon(screen,WHITE,vertices)
         elif self.shape == CIRCLE:
             radius = int(self.radius*PPM)
@@ -68,7 +69,7 @@ class Bird(Thing):
     def launch(self,screen,world,slingshot,translation):
         posa = self.body.position
         posb = slingshot.rect.centerx,slingshot.rect.y
-        posb = (posb[0]/PPM), (600-posb[1])/PPM
+        posb = (posb[0]/PPM), (VIEW[1]-posb[1])/PPM
         length = (((posb[0]-posa[0])**2+
             (posb[1]-posa[1])**2)**(1/2))
         reduct = 8#/length
@@ -77,18 +78,18 @@ class Bird(Thing):
         self.body.ApplyLinearImpulse(vector,self.body.position,True)
     def load(self,world,slingshot):
         pos = (slingshot.rect.centerx,slingshot.rect.y+10)
-        pos = (pos[0]/PPM),((600-pos[1])/PPM)
+        pos = (pos[0]/PPM),((VIEW[1]-pos[1])/PPM)
         self.body.transform = (pos,0)
 
 class Slingshot():
     def __init__(self,img,pos,world,scale=1):
         img = pygame.transform.rotozoom(img,0,scale)
         self.img = img
-        self.rect = img.get_rect(center = (pos[0]*PPM, 600-pos[1]*PPM))
+        self.rect = img.get_rect(center = (pos[0]*PPM, VIEW[1]-pos[1]*PPM))
         anchora = ((self.rect.topleft[0]+10)/PPM,
-            (600-self.rect.topleft[1]-10)/PPM)
+            (VIEW[1]-self.rect.topleft[1]-10)/PPM)
         anchorb = ((self.rect.topright[0]-10)/PPM,
-            (600-self.rect.topright[1]-10)/PPM)
+            (VIEW[1]-self.rect.topright[1]-10)/PPM)
         self.anchora = world.CreateStaticBody(position=(anchora),angle=0)
         self.anchorb = world.CreateStaticBody(position=(anchorb),angle=0)
     def draw(self,screen,translation):
@@ -97,10 +98,10 @@ class Slingshot():
     def draw_shape(self,screen):
         pygame.draw.circle(screen,WHITE,
             (int((self.anchora.position[0]-translation[0])*PPM),
-            int(600-(self.anchora.position[1]-translation[1])*PPM)),5)
+            int(VIEW[1]-(self.anchora.position[1]-translation[1])*PPM)),5)
         pygame.draw.circle(screen,WHITE,
             (int((self.anchorb.position[0]-translation[0])*PPM),
-            int(600-(self.anchorb.position[1]-translation[1])*PPM)),5)
+            int(VIEW[1]-(self.anchorb.position[1]-translation[1])*PPM)),5)
 
 class Hog(Thing):
     def __init__(self,world,img,pos,angle):
@@ -112,7 +113,7 @@ class Hog(Thing):
     def drawPuff(self,screen,translation,frame):
         rect = self.puffs[frame].get_rect(
             center=((self.pos_of[0]-translation[0])*PPM,
-            600-(self.pos_of[1]-translation[1])*PPM))
+            VIEW[1]-(self.pos_of[1]-translation[1])*PPM))
         screen.blit(self.puffs[frame],rect.topleft)
 class Log(Thing):
     def __init__(self,world,img,pos,angle,scale=1):
@@ -125,7 +126,7 @@ class Log(Thing):
     def drawShatter(self,screen,translation,frame):
         rect = self.shatters[frame].get_rect(
             center=((self.pos_of[0]-translation[0])*PPM,
-            600-(self.pos_of[1]-translation[1])*PPM))
+            VIEW[1]-(self.pos_of[1]-translation[1])*PPM))
         screen.blit(self.shatters[frame],rect.topleft)
 
 
