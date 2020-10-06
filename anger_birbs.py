@@ -11,8 +11,6 @@ art = True
 
 pygame.init()
 
-#hello
-
 
 def show_text(text, x, y, color, size):
     text_list = text.split('*')
@@ -26,10 +24,10 @@ def show_text(text, x, y, color, size):
         y = y-size*1.1
     font = pygame.font.Font("pixels.ttf", size)
     for line in text_list:
-        TextSurf,  TextRect = ((font.render(line,  True,  color)),
-            (font.render(line,  True,  color)).get_rect())
+        TextSurf,  TextRect = ((font.render(line, True, color)),
+            (font.render(line, True, color)).get_rect())
         TextRect.center = (x, y)
-        screen.blit(TextSurf,  TextRect)
+        screen.blit(TextSurf, TextRect)
         y+=size
 
 def make_log(pos, rotation, size):
