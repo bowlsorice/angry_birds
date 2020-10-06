@@ -136,3 +136,4 @@ class Level():
         self.logs = logs
         self.hogs = hogs
         self.birds = birds
+        self.num_hogs = len(hogs)

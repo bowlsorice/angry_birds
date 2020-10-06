@@ -44,6 +44,24 @@ hedgehog_art = pygame.image.load("anger_art/hedgehog.png").convert_alpha()
 
 world = world(gravity=(0,-10), doSleep=True)
 
+def show_text(screen,text,x,y,color,size):
+    text_list = text.split('*')
+    lines = 0
+    for line in text_list:
+        lines+=1
+    size = int(size*((.9)**(lines-1)))
+    if lines == 2:
+        y = y-size//2
+    elif lines == 3:
+        y = y-size*1.1
+    font = pygame.font.Font("pixels.ttf",size)
+    for line in text_list:
+        TextSurf, TextRect = ((font.render(line, True, color)),
+            (font.render(line, True, color)).get_rect())
+        TextRect.center = (x,y)
+        screen.blit(TextSurf, TextRect)
+        y+=size
+
 def make_log(pos,rotation,size):
     if size == 0:
         a_log = Log(world,log_short_art,pos,rotation,BOX)
@@ -58,9 +76,9 @@ def make_lvl1():
     birds = []
     hogs = []
     logs = []
-    base = 8.5
+    base = 12
 
-    basic = Bird(world,basic_art,(2.2,5),0)
+    basic = Bird(world,basic_art,(1.5,.5),0)
     birds.append(basic)
     redwing = Bird(world,redwing_art,(.5,.5),0)
     birds.append(redwing)
@@ -90,7 +108,7 @@ def make_lvl2():
     logs = []
     base = 12
 
-    basic = Bird(world,basic_art,(2.2,5),0)
+    basic = Bird(world,basic_art,(1.5,.5),0)
     birds.append(basic)
     redwing = Bird(world,redwing_art,(.5,.5),0)
     birds.append(redwing)
@@ -112,6 +130,34 @@ def make_lvl2():
 
     lvl2 = Level(logs,base,hogs,birds)
     return lvl2
+
+def make_lvl3():
+    birds = []
+    hogs = []
+    logs = []
+    base = 12
+
+    basic = Bird(world,basic_art,(1.5,.5),0)
+    birds.append(basic)
+    redwing = Bird(world,redwing_art,(.5,.5),0)
+    birds.append(redwing)
+    bluebird = Bird(world,bluebird_art,(1,.5),0)
+    birds.append(bluebird)
+
+    global hedgehog_art
+    hedgehog_art = pygame.transform.flip(hedgehog_art,True,False)
+    hog_infos = [((0,2.5),0)]
+    for each in hog_infos:
+        a_hog = Hog(world,hedgehog_art,(each[0][0]+base,each[0][1]),each[1])
+        hogs.append(a_hog)
+
+    log_infos = [((-1,1.0),90,0),((0,1.2),90,1),((1,2),90,2)]
+    for each in log_infos:
+        a_log = make_log((each[0][0]+base,each[0][1]),each[1],each[2])
+        logs.append(a_log)
+
+    lvl3 = Level(logs,base,hogs,birds)
+    return lvl3
 
 
 def draw_sling(color,slingshot,translation):
@@ -144,7 +190,9 @@ pan_stop = 0
 slingshot = Slingshot(slingshot_art,(1.5,1.4),world)
 ground = Thing(world,ground_art,(10,0),0,BOX,static=True)
 
-level = make_lvl2()
+levels = [make_lvl3,make_lvl1,make_lvl2]
+level = levels[0]()
+level_num = 0
 
 
 while running:
@@ -240,6 +288,14 @@ while running:
             level.logs.remove(each)
             world.DestroyBody(each.body)
 
+    for each in level.hogs:
+        if each.dead and pygame.time.get_ticks()-each.time_of>=300:
+            level.hogs.remove(each)
+    for each in level.logs:
+        if each.dead and pygame.time.get_ticks()-each.time_of>=300:
+            level.logs.remove(each)
+
+
     if (pan_back == False and TRANS[0]==level.base-VIEW[0]/PPM//2
         and pygame.time.get_ticks()-pan_stop>5000):
         pan_back = True
@@ -267,6 +323,16 @@ while running:
         else:
             pan_back = False
 
+    hogs_down = level.num_hogs-len(level.hogs)
+    if hogs_down == level.num_hogs: #next lvl prototype
+        for each in level.hogs+level.logs+level.birds:
+            world.DestroyBody(each.body)
+        in_sling = None
+        TRANS = 0,0
+        if level_num+1<=len(levels):
+            level = levels[level_num+1]()
+            level_num +=1
+
     if art:
         screen.blit(background_art,(-1*TRANS[0]*PPM,TRANS[1]*PPM))
         ground.draw(screen,TRANS)
@@ -284,9 +350,6 @@ while running:
                     each.drawShatter(screen,TRANS,2)
             elif not each.dead:
                 each.draw(screen,TRANS)
-        for each in level.logs:
-            if each.dead and pygame.time.get_ticks()-each.time_of>=300:
-                level.logs.remove(each)
         for each in level.hogs:
             if each.dead:
                 if pygame.time.get_ticks()-each.time_of<100:
@@ -297,9 +360,10 @@ while running:
                     each.drawPuff(screen,TRANS,2)
             elif not each.dead:
                 each.draw(screen,TRANS)
-        for each in level.hogs:
-            if each.dead and pygame.time.get_ticks()-each.time_of>=300:
-                level.hogs.remove(each)
+        show_text(screen,str(hogs_down)
+            +"/"+str(level.num_hogs),720,100,(255,255,102),40)
+
+
 
     elif not art:
         screen.fill((0,0,0))
