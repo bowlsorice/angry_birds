@@ -11,6 +11,8 @@ art = True
 
 pygame.init()
 
+#hello
+
 
 def show_text(text, x, y, color, size):
     text_list = text.split('*')
