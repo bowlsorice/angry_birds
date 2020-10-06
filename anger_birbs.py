@@ -15,10 +15,10 @@ def show_text(text, x, y, color, size):
     text_list = text.split('*')
     lines = 0
     for line in text_list:
-        lines+ =1
+        lines += 1
     size = int(size * (.9 ** (lines -1)))
     if lines == 2:
-        y = y- size // 2
+        y = y - size // 2
     elif lines == 3:
         y = y - size * 1.1
     font = pygame.font.Font("pixels.ttf", size)
@@ -134,21 +134,33 @@ def make_lvl3():
 def draw_sling(color, slingshot, translation):
     if in_sling is not None:
         pygame.draw.line(screen, color,
-                         ((slingshot.anchora.position[0] - translation[0]) * PPM,
-                          VIEW[1] - (slingshot.anchora.position[1] - translation[1]) * PPM),
-                         ((in_sling.body.position[0] - translation[0]) * PPM,
-                          VIEW[1] - (in_sling.body.position[1] - translation[1]) * PPM), 4)
+                         ((slingshot.anchora.position[0]
+                          - translation[0]) * PPM,
+                          VIEW[1] - (slingshot.anchora.position[1]
+                           - translation[1]) * PPM),
+                         ((in_sling.body.position[0]
+                          - translation[0]) * PPM,
+                          VIEW[1] - (in_sling.body.position[1]
+                           - translation[1]) * PPM), 4)
         pygame.draw.line(screen, color,
-                         ((slingshot.anchorb.position[0] - translation[0]) * PPM,
-                          VIEW[1] - (slingshot.anchorb.position[1] - translation[1]) * PPM),
-                         ((in_sling.body.position[0] - translation[0]) * PPM,
-                          VIEW[1] - (in_sling.body.position[1] - translation[1]) * PPM), 4)
+                         ((slingshot.anchorb.position[0]
+                          - translation[0]) * PPM,
+                          VIEW[1] - (slingshot.anchorb.position[1]
+                           - translation[1]) * PPM),
+                         ((in_sling.body.position[0]
+                          - translation[0]) * PPM,
+                          VIEW[1] - (in_sling.body.position[1]
+                           - translation[1]) * PPM), 4)
     else:
         pygame.draw.line(screen, color,
-                         ((slingshot.anchora.position[0] - translation[0]) * PPM,
-                          VIEW[1] - (slingshot.anchora.position[1] - translation[1]) * PPM),
-                         ((slingshot.anchorb.position[0] - translation[0]) * PPM,
-                          VIEW[1] - (slingshot.anchorb.position[1] - translation[1]) * PPM), 4)
+                         ((slingshot.anchora.position[0]
+                          - translation[0]) * PPM,
+                          VIEW[1] - (slingshot.anchora.position[1]
+                           - translation[1]) * PPM),
+                         ((slingshot.anchorb.position[0]
+                          - translation[0]) * PPM,
+                          VIEW[1] - (slingshot.anchorb.position[1]
+                           - translation[1]) * PPM), 4)
 
 
 in_sling = None
@@ -204,7 +216,8 @@ while running:
     else:
         if clicked:
             posa = pygame.mouse.get_pos()
-            posa = (posa[0] / PPM) + TRANS[0], (VIEW[1] - posa[1]) / PPM + TRANS[1]
+            posa = ((posa[0] / PPM) + TRANS[0],
+                    (VIEW[1] - posa[1]) / PPM + TRANS[1])
             posb = slingshot.rect.centerx, slingshot.rect.y + 10
             posb = posb[0] / PPM, (VIEW[1] - posb[1]) / PPM
             length = (((posb[0] - posa[0]) ** 2 +
@@ -350,5 +363,5 @@ while running:
 
     pygame.display.flip()
     clock.tick(FPS)
-print(pygame.display.get_wm_info())
+
 pygame.quit()

@@ -20,7 +20,7 @@ SLING_COLOR = MAROON
 
 pygame.init()
 
-screen = pygame.display.set_mode((0,0),pygame.FULLSCREEN) # for fs, set TRANS[1] to 3
+screen = pygame.display.set_mode((0,0),pygame.FULLSCREEN)
 clock = pygame.time.Clock()
 
 world = world(gravity=(0,-10), doSleep=True)
@@ -36,3 +36,10 @@ log_looong_art = pygame.image.load("anger_art/log_looong.png").convert_alpha()
 log_short_art = pygame.image.load("anger_art/log_short.png").convert_alpha()
 slingshot_art = pygame.image.load("anger_art/slingshot.png").convert_alpha()
 hedgehog_art = pygame.image.load("anger_art/hedgehog.png").convert_alpha()
+puff1, puff2, puff3 = (pygame.image.load("anger_art/puff1.png").convert_alpha(),
+        pygame.image.load("anger_art/puff2.png").convert_alpha(),
+        pygame.image.load("anger_art/puff3.png").convert_alpha())
+shatter1, shatter2, shatter3 = (pygame.image.load("anger_art/"+
+        "shatter1.png").convert_alpha(),
+        pygame.image.load("anger_art/shatter2.png").convert_alpha(),
+        pygame.image.load("anger_art/shatter3.png").convert_alpha())

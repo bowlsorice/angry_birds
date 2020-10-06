@@ -100,9 +100,7 @@ class Hog(Thing):
     def __init__(self,img,pos,angle):
         self.dead  = False
         super().__init__(img,pos,angle,CIRCLE,density=4)
-        self.puffs = [pygame.image.load("anger_art/puff1.png").convert_alpha(),
-            pygame.image.load("anger_art/puff2.png").convert_alpha(),
-            pygame.image.load("anger_art/puff3.png").convert_alpha()]
+        self.puffs = [puff1, puff2, puff3]
     def drawPuff(self,translation,frame):
         rect = self.puffs[frame].get_rect(
             center=((self.pos_of[0]-translation[0])*PPM,
@@ -112,10 +110,7 @@ class Log(Thing):
     def __init__(self,img,pos,angle,scale=1):
         self.dead = False
         super().__init__(img,pos,angle,BOX,density=1,scale=scale)
-        self.shatters = [
-            pygame.image.load("anger_art/shatter1.png").convert_alpha(),
-            pygame.image.load("anger_art/shatter2.png").convert_alpha(),
-            pygame.image.load("anger_art/shatter3.png").convert_alpha()]
+        self.shatters = [shatter1, shatter2, shatter3]
     def drawShatter(self,translation,frame):
         rect = self.shatters[frame].get_rect(
             center=((self.pos_of[0]-translation[0])*PPM,
