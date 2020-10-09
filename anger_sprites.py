@@ -38,7 +38,7 @@ class Thing():
         pos = ((self.body.position[0]-translation[0])*PPM,
             VIEW[1]-((self.body.position[1]-translation[1])*PPM))
         if self.shape == BOX:
-            vertices = [(self.body.transform * v) 
+            vertices = [(self.body.transform * v)
                 for v in self.fix.shape.vertices]
             vertices = [((v[0]-translation[0])*PPM,
                 VIEW[1]-(v[1]-translation[1])*PPM) for v in vertices]
@@ -108,16 +108,29 @@ class Hog(Thing):
         screen.blit(self.puffs[frame],rect.topleft)
 
 class Log(Thing):
-    def __init__(self,pos,angle,shape):
+    def __init__(self,pos,angle,shape, is_ice=False):
         self.dead = False
+        self.is_ice = is_ice
         if shape == 0:
-            img = log_short_art
+            if is_ice:
+                img = ice_short_art
+            else:
+                img = log_short_art
         elif shape == 1:
-            img = log_long_art
+            if is_ice:
+                img = ice_long_art
+            else:
+                img = log_long_art
         elif shape == 2:
-            img = log_looong_art
+            if is_ice:
+                img = ice_looong_art
+            else:
+                img = log_looong_art
         super().__init__(img,pos,angle,BOX)
-        self.shatters = [shatter1, shatter2, shatter3]
+        if is_ice:
+            self.shatters = [ice_shatter1, ice_shatter2, ice_shatter3]
+        else:
+            self.shatters = [shatter1, shatter2, shatter3]
     def drawShatter(self,translation,frame):
         rect = self.shatters[frame].get_rect(
             center=((self.pos_of[0]-translation[0])*PPM,

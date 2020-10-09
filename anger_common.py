@@ -34,6 +34,10 @@ log_long_art = pygame.image.load("anger_art/log_long.png").convert_alpha()
 log_looong_art = pygame.image.load("anger_art/log_looong.png").convert_alpha()
 log_short_art = pygame.image.load("anger_art/log_short.png").convert_alpha()
 
+ice_long_art = pygame.image.load("anger_art/ice_long.png").convert_alpha()
+ice_looong_art = pygame.image.load("anger_art/ice_looong.png").convert_alpha()
+ice_short_art = pygame.image.load("anger_art/ice_short.png").convert_alpha()
+
 hedgehog_art = pygame.image.load("anger_art/hedgehog.png").convert_alpha()
 hedgehog_art = pygame.transform.flip(hedgehog_art, True, False)
 
@@ -48,3 +52,7 @@ shatter1, shatter2, shatter3 = (pygame.image.load("anger_art/"+
         "shatter1.png").convert_alpha(),
         pygame.image.load("anger_art/shatter2.png").convert_alpha(),
         pygame.image.load("anger_art/shatter3.png").convert_alpha())
+ice_shatter1, ice_shatter2, ice_shatter3 = (pygame.image.load("anger_art/"+
+        "ice_shatter1.png").convert_alpha(),
+        pygame.image.load("anger_art/ice_shatter2.png").convert_alpha(),
+        pygame.image.load("anger_art/ice_shatter3.png").convert_alpha())

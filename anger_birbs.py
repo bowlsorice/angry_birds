@@ -6,7 +6,7 @@ TRANS = 0, 0
 
 game = True
 running = True
-art = False
+art = True
 
 pygame.init()
 
@@ -33,7 +33,12 @@ def show_text(text, x, y, color, size):
 def make_logs(info_list,base):
     logs = []
     for each in info_list:
-        a_log = Log((each[0][0]+base,each[0][1]), each[1], each[2])
+        if each [-1] == "ice":
+            a_log = Log((each[0][0]+base,each[0][1]),
+                    each[1], each[2],is_ice=True)
+        else:
+            a_log = Log((each[0][0]+base,each[0][1]),
+                    each[1], each[2])
         logs.append(a_log)
     return logs
 
@@ -59,7 +64,7 @@ def make_lvl1():
     hog_infos = [((0, 3.75), 0)]
     hogs = make_hogs(hog_infos, base)
 
-    log_infos = [((-.5, 1), 90, ), ((.5, 1), 90, 1),
+    log_infos = [((-.5, 1), 90, 1, "ice"), ((.5, 1), 90, 1),
                  ((0, 2), 0, 1), ((-.3, 3), 90, 0),
                  ((.2, 3), 90, 0), ((0, 3.5), 0, 0)]
     logs = make_logs(log_infos,base)
