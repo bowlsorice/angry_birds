@@ -6,7 +6,7 @@ TRANS = 0, 0
 
 game = True
 running = True
-art = True
+art = False
 
 pygame.init()
 
@@ -33,21 +33,22 @@ def show_text(text, x, y, color, size):
 def make_logs(info_list,base):
     logs = []
     for each in info_list:
-        if each[2] == 0:
-            a_log = Log(log_short_art, (each[0][0]+base,each[0][1]), each[1])
-        elif each[2] == 1:
-            a_log = Log(log_long_art, (each[0][0]+base,each[0][1]), each[1])
-        elif each[2] == 2:
-            a_log = Log(log_looong_art, (each[0][0]+base,each[0][1]), each[1])
+        a_log = Log((each[0][0]+base,each[0][1]), each[1], each[2])
         logs.append(a_log)
     return logs
 
+def make_hogs(info_list,base):
+    hogs = []
+    for info in info_list:
+        a_hog = Hog((info[0][0] + base, info[0][1]), info[1])
+        hogs.append(a_hog)
+    return hogs
+
 
 def make_lvl1():
-    birds = []
-    hogs = []
     base = 12
 
+    birds = []
     basic = Bird(basic_art, (1.5, .5), 0)
     birds.append(basic)
     redwing = Bird(redwing_art, (.5, .5), 0)
@@ -55,14 +56,10 @@ def make_lvl1():
     bluebird = Bird(bluebird_art, (1, .5), 0)
     birds.append(bluebird)
 
-    global hedgehog_art
-    hedgehog_art = pygame.transform.flip(hedgehog_art, True, False)
     hog_infos = [((0, 3.75), 0)]
-    for info in hog_infos:
-        a_hog = Hog(hedgehog_art, (info[0][0] + base, info[0][1]), info[1])
-        hogs.append(a_hog)
+    hogs = make_hogs(hog_infos, base)
 
-    log_infos = [((-.5, 1), 90, 1), ((.5, 1), 90, 1),
+    log_infos = [((-.5, 1), 90, ), ((.5, 1), 90, 1),
                  ((0, 2), 0, 1), ((-.3, 3), 90, 0),
                  ((.2, 3), 90, 0), ((0, 3.5), 0, 0)]
     logs = make_logs(log_infos,base)
@@ -72,11 +69,9 @@ def make_lvl1():
 
 
 def make_lvl2():
-    birds = []
-    hogs = []
-    logs = []
     base = 12
 
+    birds = []
     basic = Bird(basic_art, (1.5, .5), 0)
     birds.append(basic)
     redwing = Bird(redwing_art, (.5, .5), 0)
@@ -87,9 +82,7 @@ def make_lvl2():
     global hedgehog_art
     hedgehog_art = pygame.transform.flip(hedgehog_art, True, False)
     hog_infos = [((0, 3), 0), ((-.75, 1), 0), ((.75, 1), 0)]
-    for info in hog_infos:
-        a_hog = Hog(hedgehog_art, (info[0][0] + base, info[0][1]), info[1])
-        hogs.append(a_hog)
+    hogs = make_hogs(hog_infos, base)
 
     log_infos = [((-1.5, 1.0), 90, 0), ((1.5, 1.0), 90, 0), ((0, 1.0), 90, 0),
                  ((0, 1.5), 0, 2), ((-.25, 2.0), 90, 0), ((.25, 2.0), 90, 0),
@@ -101,11 +94,9 @@ def make_lvl2():
 
 
 def make_lvl3():
-    birds = []
-    hogs = []
-    logs = []
     base = 12
 
+    birds = []
     basic = Bird(basic_art, (1.5, .5), 0)
     birds.append(basic)
     redwing = Bird(redwing_art, (.5, .5), 0)
@@ -113,12 +104,8 @@ def make_lvl3():
     bluebird = Bird(bluebird_art, (1, .5), 0)
     birds.append(bluebird)
 
-    global hedgehog_art
-    hedgehog_art = pygame.transform.flip(hedgehog_art, True, False)
     hog_infos = [((0, 2.5), 0)]
-    for info in hog_infos:
-        a_hog = Hog(hedgehog_art, (info[0][0] + base, info[0][1]), info[1])
-        hogs.append(a_hog)
+    hogs = make_hogs(hog_infos, base)
 
     log_infos = [((-1, 1.0), 90, 0), ((0, 1.2), 90, 1), ((1, 2), 90, 2)]
     logs = make_logs(log_infos,base)
@@ -169,15 +156,13 @@ pan_stop = 0
 slingshot = Slingshot(slingshot_art, (1.5, 1.4))
 ground = Thing(ground_art, (10, 0), 0, BOX, static=True)
 
-levels = [make_lvl3, make_lvl1, make_lvl2]
+levels = [make_lvl1, make_lvl2, make_lvl2]
 level = levels[0]()
 level_num = 0
 
 while running:
     for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-        elif event.type == pygame.MOUSEBUTTONDOWN:
+        if event.type == pygame.MOUSEBUTTONDOWN:
             pos = pygame.mouse.get_pos()
             pos = (pos[0] / PPM) + TRANS[0], (VIEW[1] - pos[1]) / PPM + TRANS[1]
             if in_sling is not None:
@@ -346,15 +331,13 @@ while running:
         screen.fill((0, 0, 0))
         ground.draw_shape(TRANS)
         for log in level.logs:
-            log.draw_shape(TRANS)
+            if not log.dead:
+                log.draw_shape(TRANS)
         for bird in level.birds:
             bird.draw_shape(TRANS)
         for hog in level.hogs:
             if not hog.dead:
                 hog.draw_shape(TRANS)
-        for hog in level.hogs:
-            if hog.dead and pygame.time.get_ticks() - hog.time_of >= 300:
-                level.hogs.remove(hog)
         draw_sling(WHITE, slingshot, TRANS)
 
     pygame.display.flip()

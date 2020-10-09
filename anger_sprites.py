@@ -38,7 +38,7 @@ class Thing():
         pos = ((self.body.position[0]-translation[0])*PPM,
             VIEW[1]-((self.body.position[1]-translation[1])*PPM))
         if self.shape == BOX:
-            vertices = [(self.body.transform * v) #here!! STILL BAD
+            vertices = [(self.body.transform * v) 
                 for v in self.fix.shape.vertices]
             vertices = [((v[0]-translation[0])*PPM,
                 VIEW[1]-(v[1]-translation[1])*PPM) for v in vertices]
@@ -97,9 +97,9 @@ class Slingshot():
             int(VIEW[1]-(self.anchorb.position[1]-translation[1])*PPM)),5)
 
 class Hog(Thing):
-    def __init__(self,img,pos,angle):
+    def __init__(self,pos,angle):
         self.dead  = False
-        super().__init__(img,pos,angle,CIRCLE,density=4)
+        super().__init__(hedgehog_art,pos,angle,CIRCLE,density=4)
         self.puffs = [puff1, puff2, puff3]
     def drawPuff(self,translation,frame):
         rect = self.puffs[frame].get_rect(
@@ -108,8 +108,14 @@ class Hog(Thing):
         screen.blit(self.puffs[frame],rect.topleft)
 
 class Log(Thing):
-    def __init__(self,img,pos,angle):
+    def __init__(self,pos,angle,shape):
         self.dead = False
+        if shape == 0:
+            img = log_short_art
+        elif shape == 1:
+            img = log_long_art
+        elif shape == 2:
+            img = log_looong_art
         super().__init__(img,pos,angle,BOX)
         self.shatters = [shatter1, shatter2, shatter3]
     def drawShatter(self,translation,frame):
