@@ -106,10 +106,11 @@ class Hog(Thing):
             center=((self.pos_of[0]-translation[0])*PPM,
             VIEW[1]-(self.pos_of[1]-translation[1])*PPM))
         screen.blit(self.puffs[frame],rect.topleft)
+
 class Log(Thing):
-    def __init__(self,img,pos,angle,scale=1):
+    def __init__(self,img,pos,angle):
         self.dead = False
-        super().__init__(img,pos,angle,BOX,density=1,scale=scale)
+        super().__init__(img,pos,angle,BOX)
         self.shatters = [shatter1, shatter2, shatter3]
     def drawShatter(self,translation,frame):
         rect = self.shatters[frame].get_rect(

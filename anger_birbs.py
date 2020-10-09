@@ -30,20 +30,22 @@ def show_text(text, x, y, color, size):
         y += size
 
 
-def make_log(pos, rotation, size):
-    if size == 0:
-        a_log = Log(log_short_art, pos, rotation, BOX)
-    elif size == 1:
-        a_log = Log(log_long_art, pos, rotation, BOX)
-    elif size == 2:
-        a_log = Log(log_looong_art, pos, rotation, BOX)
-    return a_log
+def make_logs(info_list,base):
+    logs = []
+    for each in info_list:
+        if each[2] == 0:
+            a_log = Log(log_short_art, (each[0][0]+base,each[0][1]), each[1])
+        elif each[2] == 1:
+            a_log = Log(log_long_art, (each[0][0]+base,each[0][1]), each[1])
+        elif each[2] == 2:
+            a_log = Log(log_looong_art, (each[0][0]+base,each[0][1]), each[1])
+        logs.append(a_log)
+    return logs
 
 
 def make_lvl1():
     birds = []
     hogs = []
-    logs = []
     base = 12
 
     basic = Bird(basic_art, (1.5, .5), 0)
@@ -63,9 +65,7 @@ def make_lvl1():
     log_infos = [((-.5, 1), 90, 1), ((.5, 1), 90, 1),
                  ((0, 2), 0, 1), ((-.3, 3), 90, 0),
                  ((.2, 3), 90, 0), ((0, 3.5), 0, 0)]
-    for info in log_infos:
-        a_log = make_log((info[0][0] + base, info[0][1]), info[1], info[2])
-        logs.append(a_log)
+    logs = make_logs(log_infos,base)
 
     lvl1 = Level(logs, base, hogs, birds)
     return lvl1
@@ -94,9 +94,7 @@ def make_lvl2():
     log_infos = [((-1.5, 1.0), 90, 0), ((1.5, 1.0), 90, 0), ((0, 1.0), 90, 0),
                  ((0, 1.5), 0, 2), ((-.25, 2.0), 90, 0), ((.25, 2.0), 90, 0),
                  ((0, 2.5), 0, 1)]
-    for info in log_infos:
-        a_log = make_log((info[0][0] + base, info[0][1]), info[1], info[2])
-        logs.append(a_log)
+    logs = make_logs(log_infos,base)
 
     lvl2 = Level(logs, base, hogs, birds)
     return lvl2
@@ -123,9 +121,7 @@ def make_lvl3():
         hogs.append(a_hog)
 
     log_infos = [((-1, 1.0), 90, 0), ((0, 1.2), 90, 1), ((1, 2), 90, 2)]
-    for info in log_infos:
-        a_log = make_log((info[0][0] + base, info[0][1]), info[1], info[2])
-        logs.append(a_log)
+    logs = make_logs(log_infos,base)
 
     lvl3 = Level(logs, base, hogs, birds)
     return lvl3
