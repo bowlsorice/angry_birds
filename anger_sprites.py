@@ -99,6 +99,7 @@ class Slingshot():
 class Hog(Thing):
     def __init__(self,pos,angle):
         self.dead  = False
+        self.minv = 1.5
         super().__init__(hedgehog_art,pos,angle,CIRCLE,density=4)
         self.puffs = [puff1, puff2, puff3]
     def drawPuff(self,translation,frame):
@@ -106,11 +107,16 @@ class Hog(Thing):
             center=((self.pos_of[0]-translation[0])*PPM,
             VIEW[1]-(self.pos_of[1]-translation[1])*PPM))
         screen.blit(self.puffs[frame],rect.topleft)
+    def kill(self):
+        self.dead = True
+        self.time_of = pygame.time.get_ticks()
+        self.pos_of = self.body.position
+        world.DestroyBody(self.body)
+        self.body = None
 
 class Log(Thing):
     def __init__(self,pos,angle,shape, is_ice=False):
         self.dead = False
-        self.is_ice = is_ice
         if shape == 0:
             if is_ice:
                 img = ice_short_art
@@ -129,13 +135,21 @@ class Log(Thing):
         super().__init__(img,pos,angle,BOX)
         if is_ice:
             self.shatters = [ice_shatter1, ice_shatter2, ice_shatter3]
+            self.minv = 1
         else:
             self.shatters = [shatter1, shatter2, shatter3]
+            self.minv = 4
     def drawShatter(self,translation,frame):
         rect = self.shatters[frame].get_rect(
             center=((self.pos_of[0]-translation[0])*PPM,
             VIEW[1]-(self.pos_of[1]-translation[1])*PPM))
         screen.blit(self.shatters[frame],rect.topleft)
+    def kill(self):
+        self.dead = True
+        self.time_of = pygame.time.get_ticks()
+        self.pos_of = self.body.position
+        world.DestroyBody(self.body)
+        self.body = None
 
 
 class Level():

@@ -61,12 +61,11 @@ def make_lvl1():
     bluebird = Bird(bluebird_art, (1, .5), 0)
     birds.append(bluebird)
 
-    hog_infos = [((0, 3.75), 0)]
+    hog_infos = [((-5,1),0)]#((0, 2.0), 0)]
     hogs = make_hogs(hog_infos, base)
 
-    log_infos = [((-.5, 1), 90, 1, "ice"), ((.5, 1), 90, 1),
-                 ((0, 2), 0, 1), ((-.3, 3), 90, 0),
-                 ((.2, 3), 90, 0), ((0, 3.5), 0, 0)]
+    log_infos = [((-1, 1.0), 90, 0), ((0, 1.2), 90, 1), ((1, 2), 90, 2),
+                ((-5,8),0,0)]
     logs = make_logs(log_infos,base)
 
     lvl1 = Level(logs, base, hogs, birds)
@@ -84,14 +83,12 @@ def make_lvl2():
     bluebird = Bird(bluebird_art, (1, .5), 0)
     birds.append(bluebird)
 
-    global hedgehog_art
-    hedgehog_art = pygame.transform.flip(hedgehog_art, True, False)
-    hog_infos = [((0, 3), 0), ((-.75, 1), 0), ((.75, 1), 0)]
+    hog_infos = [((0, 3.6), 0)]
     hogs = make_hogs(hog_infos, base)
 
-    log_infos = [((-1.5, 1.0), 90, 0), ((1.5, 1.0), 90, 0), ((0, 1.0), 90, 0),
-                 ((0, 1.5), 0, 2), ((-.25, 2.0), 90, 0), ((.25, 2.0), 90, 0),
-                 ((0, 2.5), 0, 1)]
+    log_infos = [((-.5, 1), 90, 1, "ice"), ((.5, 1), 90, 1, "ice"),
+                 ((0, 2), 0, 1), ((-.3, 3), 90, 0),
+                 ((.2, 3), 90, 0), ((0, 3.5), 0, 0, "ice")]
     logs = make_logs(log_infos,base)
 
     lvl2 = Level(logs, base, hogs, birds)
@@ -109,10 +106,13 @@ def make_lvl3():
     bluebird = Bird(bluebird_art, (1, .5), 0)
     birds.append(bluebird)
 
-    hog_infos = [((0, 2.5), 0)]
+    hog_infos = [((0, 3), 0), ((-.75, 1), 0), ((.75, 1), 0)]
     hogs = make_hogs(hog_infos, base)
 
-    log_infos = [((-1, 1.0), 90, 0), ((0, 1.2), 90, 1), ((1, 2), 90, 2)]
+    log_infos = [((-1.5, 1.0), 90, 0, "ice"), ((1.5, 1.0), 90, 0, "ice"),
+                ((0, 1.0), 90, 0, "ice"), ((0, 1.5), 0, 2),
+                ((-.25, 2.0), 90, 0), ((.25, 2.0), 90, 0),
+                ((0, 2.5), 0, 1)]
     logs = make_logs(log_infos,base)
 
     lvl3 = Level(logs, base, hogs, birds)
@@ -161,7 +161,7 @@ pan_stop = 0
 slingshot = Slingshot(slingshot_art, (1.5, 1.4))
 ground = Thing(ground_art, (10, 0), 0, BOX, static=True)
 
-levels = [make_lvl1, make_lvl2, make_lvl2]
+levels = [make_lvl1, make_lvl2, make_lvl3]
 level = levels[0]()
 level_num = 0
 
@@ -227,35 +227,47 @@ while running:
     world.Step(TIME_STEP / 2, 5, 5)
     world.Step(TIME_STEP / 2, 5, 5)
 
+    alive = []
     for item in level.hogs + level.logs:
         if not item.dead:
-            v = item.getV()
-            v = (v[0] ** 2 + v[1] ** 2) ** (1 / 2)
-            if type(item) == Hog:
-                if abs(v - item.lastv) > 1.5:
-                    item.dead = True
-                    item.time_of = pygame.time.get_ticks()
-                    item.pos_of = item.body.position
-                    world.DestroyBody(item.body)
-            else:
-                if abs(v - item.lastv) > 4:
-                    item.dead = True
-                    item.time_of = pygame.time.get_ticks()
-                    item.pos_of = item.body.position
-                    world.DestroyBody(item.body)
+            alive.append(item)
+
+    for item in alive:
+        v = item.getV()
+        v = (v[0] ** 2 + v[1] ** 2) ** (1 / 2)
+        if abs(v - item.lastv) > item.minv:
+            item.kill()
+        #if not item.dead:
+            #if (len(item.body.contacts))>0:
+                #for contact in item.body.contacts:
+                    #if contact.other != ground.body:
+                        #print(item.body)
+                        #print(item.dead)
+                        #if contact.other.position[1]>item.body.position[1]:
+                            #if contact.other.linearVelocity[1]<-2:
+                                #item.dead = True
+                                #item.time_of = pygame.time.get_ticks()
+                                #item.pos_of = item.body.position
+                                #world.DestroyBody(item.body)
+                                #item.body = None
 
     for hog in level.hogs:
-        if hog.body.position[1] < 0:
-            level.hogs.remove(hog)
-            world.DestroyBody(hog.body)
+        if not hog.dead:
+            if hog.body.position[1] < 0:
+                world.DestroyBody(hog.body)
+                level.hogs.remove(hog)
+                hog.body = None
     for bird in level.birds:
         if bird.body.position[1] < 0:
-            level.birds.remove(bird)
             world.DestroyBody(bird.body)
+            level.birds.remove(bird)
+            bird.body = None
     for log in level.logs:
-        if log.body.position[1] < 0:
-            level.logs.remove(log)
-            world.DestroyBody(log.body)
+        if not log.dead:
+            if log.body.position[1] < 0:
+                world.DestroyBody(log.body)
+                level.logs.remove(log)
+                log.body = None
 
     for hog in level.hogs:
         if hog.dead and pygame.time.get_ticks() - hog.time_of >= 300:
@@ -269,9 +281,11 @@ while running:
         pan_back = True
         all = []
         for log in level.logs:
-            all.append(log)
+            if not log.dead:
+                all.append(log)
         for hog in level.hogs:
-            all.append(hog)
+            if not hog.dead:
+                all.append(hog)
         for each in all:
             v1 = each.getV()
             v1 = (v1[0] ** 2 + v1[1] ** 2) ** (1 / 2)
@@ -294,7 +308,13 @@ while running:
     hogs_down = level.num_hogs - len(level.hogs)
     if hogs_down == level.num_hogs:
         for item in level.hogs + level.logs + level.birds:
-            world.DestroyBody(item.body)
+            if item in level.birds:
+                world.DestroyBody(item.body)
+                item.body = None
+            else:
+                if not item.dead:
+                    world.DestroyBody(item.body)
+                    item.body = None
         in_sling = None
         TRANS = 0, 0
         if level_num + 1 <= len(levels):
