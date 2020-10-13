@@ -49,6 +49,12 @@ def make_hogs(info_list,base):
         hogs.append(a_hog)
     return hogs
 
+def get_v(body):
+    v = body.linearVelocity
+    v = (v[0] ** 2 + v[1] ** 2) ** (1 / 2)
+    return v
+
+
 
 def make_lvl1():
     base = 12
@@ -220,9 +226,8 @@ while running:
 
     for item in level.hogs + level.logs:
         if not item.dead:
-            v1 = item.getV()
-            v1 = (v1[0] ** 2 + v1[1] ** 2) ** (1 / 2)
-            item.lastv = v1
+            lastv = get_v(item.body)
+            item.lastv = lastv
 
     world.Step(TIME_STEP / 2, 5, 5)
     world.Step(TIME_STEP / 2, 5, 5)
@@ -233,23 +238,15 @@ while running:
             alive.append(item)
 
     for item in alive:
-        v = item.getV()
-        v = (v[0] ** 2 + v[1] ** 2) ** (1 / 2)
+        v = get_v(item.body)
         if abs(v - item.lastv) > item.minv:
             item.kill()
-        #if not item.dead:
-            #if (len(item.body.contacts))>0:
-                #for contact in item.body.contacts:
-                    #if contact.other != ground.body:
-                        #print(item.body)
-                        #print(item.dead)
-                        #if contact.other.position[1]>item.body.position[1]:
-                            #if contact.other.linearVelocity[1]<-2:
-                                #item.dead = True
-                                #item.time_of = pygame.time.get_ticks()
-                                #item.pos_of = item.body.position
-                                #world.DestroyBody(item.body)
-                                #item.body = None
+        elif abs(item.body.linearVelocity[1])<.5:
+            for contact in item.body.contacts:
+                other_v = get_v(contact.other)
+                if other_v>item.minv:
+                    item.kill()
+
 
     for hog in level.hogs:
         if not hog.dead:
@@ -287,9 +284,8 @@ while running:
             if not hog.dead:
                 all.append(hog)
         for each in all:
-            v1 = each.getV()
-            v1 = (v1[0] ** 2 + v1[1] ** 2) ** (1 / 2)
-            if abs(v1) > .2:
+            v = get_v(each.body)
+            if abs(v) > .2:
                 pan_back = False
 
     if pan_to:
@@ -329,26 +325,16 @@ while running:
         draw_sling(SLING_COLOR, slingshot, TRANS)
         for bird in level.birds:
             bird.draw(TRANS)
-        for hog in level.logs:
-            if hog.dead:
-                if pygame.time.get_ticks() - hog.time_of < 100:
-                    hog.drawShatter(TRANS, 0)
-                elif pygame.time.get_ticks() - hog.time_of < 200:
-                    hog.drawShatter(TRANS, 1)
-                elif pygame.time.get_ticks() - hog.time_of < 300:
-                    hog.drawShatter(TRANS, 2)
-            elif not hog.dead:
-                hog.draw(TRANS)
-        for hog in level.hogs:
-            if hog.dead:
-                if pygame.time.get_ticks() - hog.time_of < 100:
-                    hog.drawPuff(TRANS, 0)
-                elif pygame.time.get_ticks() - hog.time_of < 200:
-                    hog.drawPuff(TRANS, 1)
-                elif pygame.time.get_ticks() - hog.time_of < 300:
-                    hog.drawPuff(TRANS, 2)
-            elif not hog.dead:
-                hog.draw(TRANS)
+        for item in level.logs+level.hogs:
+            if item.dead:
+                if pygame.time.get_ticks() - item.time_of < 100:
+                    item.drawDeath(TRANS, 0)
+                elif pygame.time.get_ticks() - item.time_of < 200:
+                    item.drawDeath(TRANS, 1)
+                elif pygame.time.get_ticks() - item.time_of < 300:
+                    item.drawDeath(TRANS, 2)
+            elif not item.dead:
+                item.draw(TRANS)
         show_text(str(hogs_down) +
                   "/" + str(level.num_hogs), 720, 100, (255, 255, 102), 40)
 

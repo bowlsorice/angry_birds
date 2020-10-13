@@ -51,8 +51,7 @@ class Thing():
             y = pos[1]-radius*math.sin(self.body.angle)
             point = x,y
             pygame.draw.line(screen,(0,0,0),pos,point)
-    def getV(self):
-        return (self.body.linearVelocity[0],self.body.linearVelocity[1])
+
 
 
 class Bird(Thing):
@@ -96,25 +95,28 @@ class Slingshot():
             (int((self.anchorb.position[0]-translation[0])*PPM),
             int(VIEW[1]-(self.anchorb.position[1]-translation[1])*PPM)),5)
 
-class Hog(Thing):
-    def __init__(self,pos,angle):
-        self.dead  = False
-        self.minv = 1.5
-        super().__init__(hedgehog_art,pos,angle,CIRCLE,density=4)
-        self.puffs = [puff1, puff2, puff3]
-    def drawPuff(self,translation,frame):
-        rect = self.puffs[frame].get_rect(
-            center=((self.pos_of[0]-translation[0])*PPM,
-            VIEW[1]-(self.pos_of[1]-translation[1])*PPM))
-        screen.blit(self.puffs[frame],rect.topleft)
+class Scene(Thing):
     def kill(self):
         self.dead = True
         self.time_of = pygame.time.get_ticks()
         self.pos_of = self.body.position
         world.DestroyBody(self.body)
         self.body = None
+    def drawDeath(self,translation,frame):
+        rect = self.frames[frame].get_rect(
+            center=((self.pos_of[0]-translation[0])*PPM,
+            VIEW[1]-(self.pos_of[1]-translation[1])*PPM))
+        screen.blit(self.frames[frame],rect.topleft)
 
-class Log(Thing):
+class Hog(Scene):
+    def __init__(self,pos,angle):
+        self.dead  = False
+        self.minv = 1.5
+        super().__init__(hedgehog_art,pos,angle,CIRCLE,density=4)
+        self.frames = [puff1, puff2, puff3]
+
+
+class Log(Scene):
     def __init__(self,pos,angle,shape, is_ice=False):
         self.dead = False
         if shape == 0:
@@ -134,23 +136,11 @@ class Log(Thing):
                 img = log_looong_art
         super().__init__(img,pos,angle,BOX)
         if is_ice:
-            self.shatters = [ice_shatter1, ice_shatter2, ice_shatter3]
+            self.frames = [ice_shatter1, ice_shatter2, ice_shatter3]
             self.minv = 1
         else:
-            self.shatters = [shatter1, shatter2, shatter3]
+            self.frames = [shatter1, shatter2, shatter3]
             self.minv = 4
-    def drawShatter(self,translation,frame):
-        rect = self.shatters[frame].get_rect(
-            center=((self.pos_of[0]-translation[0])*PPM,
-            VIEW[1]-(self.pos_of[1]-translation[1])*PPM))
-        screen.blit(self.shatters[frame],rect.topleft)
-    def kill(self):
-        self.dead = True
-        self.time_of = pygame.time.get_ticks()
-        self.pos_of = self.body.position
-        world.DestroyBody(self.body)
-        self.body = None
-
 
 class Level():
     def __init__(self,logs,base,hogs,birds):
