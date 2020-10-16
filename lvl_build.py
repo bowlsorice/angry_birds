@@ -8,17 +8,6 @@ ice = False
 BLUE = (165,242,243)
 RED = (255,0,0)
 
-class Button:
-    def __init__(self,colora,colorb,text,textsize,rect):
-        self.rect = pygame.Rect(rect)
-        self.colora = colora
-        self.colorb = colorb
-        self.text = text
-        self.size = textsize
-    def draw(self):
-        pygame.draw.rect(screen,self.colora,self.rect)
-        show_text(self.text,self.rect[0]+self.rect[2]/2,
-                    self.rect[1]+self.size,self.colorb,self.size)
 
 def get_world_pos():
     pos = pygame.mouse.get_pos()
@@ -37,6 +26,8 @@ add_log3 = Button(WHITE,BLACK,"add long log",20,(1220,150,180,40))
 buttons.append(add_log3)
 ice_button = Button(BLUE,WHITE,"ice",20,(1220,200,180,40))
 buttons.append(ice_button)
+add_hog = Button(WHITE,BLACK,"add hog",20,(1220,250,180,40))
+buttons.append(add_hog)
 
 ground = Thing(ground_art, (10, 0), 0, BOX, static=True)
 items = []
@@ -68,6 +59,12 @@ while running:
                         if clicked.get(item):
                             item.body.transform = (get_world_pos(),
                                                 item.body.angle + pi/6)
+            elif event.key == pygame.K_BACKSPACE:
+                for item in items:
+                    if clicked.get(item):
+                        world.DestroyBody(item.body)
+                        items.remove(item)
+
         elif event.type == pygame.MOUSEBUTTONDOWN:
             pos = pygame.mouse.get_pos()
             if (add_log1.rect.left<pos[0]<add_log1.rect.right
@@ -89,6 +86,9 @@ while running:
                     ice = True
                     ice_button.colora = WHITE
                     ice_button.colorb = BLACK
+            elif (add_hog.rect.left<pos[0]<add_hog.rect.right
+                and add_hog.rect.top<pos[1]<add_hog.rect.bottom):
+                items.append(Hog((1, 5), 0))
             for item in items:
                 if not clicked.get(item):
                     clicked[item] = item.fix.TestPoint(get_world_pos())
@@ -99,8 +99,16 @@ while running:
                     item.body.awake = True
                     item.body.linearVelocity = 0,0
     for item in items:
+        if item.body.position[1]<0:
+            world.DestroyBody(item.body)
+            items.remove(item)
+    for item in items:
         if clicked.get(item):
-            item.body.transform = get_world_pos(), item.body.angle
+            angle = item.body.angle
+            angle = angle/(pi/6)
+            angle = round(angle,0)
+            angle = angle*(pi/6)
+            item.body.transform = get_world_pos(), angle
             item.body.awake = False
 
 
@@ -117,9 +125,14 @@ while running:
     pygame.display.flip()
 
 log_infos = []
+hog_infos = []
 for item in items:
-    if type(item)==Log:
+    if type(item) == Log:
         log_infos.append(((item.body.position[0]-7.2,item.body.position[1]),
-            item.body.angle*(180/pi), item.shape, item.is_ice))
-print(log_infos)
+                        item.body.angle*(180/pi), item.shape, item.is_ice))
+    elif type(item) == Hog:
+        hog_infos.append(((item.body.position[0]-7.2,item.body.position[1]),
+                        0))
+print("logs: "+str(log_infos))
+print("hogs: "+str(hog_infos))
 pygame.quit()

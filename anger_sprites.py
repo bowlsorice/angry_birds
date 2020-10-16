@@ -152,6 +152,18 @@ class Level():
         self.birds = birds
         self.num_hogs = len(hogs)
 
+class Button:
+    def __init__(self,colora,colorb,text,textsize,rect):
+        self.rect = pygame.Rect(rect)
+        self.colora = colora
+        self.colorb = colorb
+        self.text = text
+        self.size = textsize
+    def draw(self):
+        pygame.draw.rect(screen,self.colora,self.rect)
+        show_text(self.text,self.rect[0]+self.rect[2]/2,
+                    self.rect[1]+self.size,self.colorb,self.size)
+
 
 def show_text(text, x, y, color, size):
     text_list = text.split('*')
