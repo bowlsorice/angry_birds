@@ -1,6 +1,7 @@
 
 from anger_common import *
 from anger_sprites import *
+from lvl_makers import *
 
 TRANS = 0, 0
 
@@ -11,127 +12,10 @@ art = True
 pygame.init()
 
 
-
-def make_logs(info_list,base):
-    logs = []
-    for each in info_list:
-        a_log = Log((each[0][0]+base,each[0][1]),
-                each[1], each[2],each[3])
-        logs.append(a_log)
-    return logs
-
-def make_hogs(info_list,base):
-    hogs = []
-    for info in info_list:
-        a_hog = Hog((info[0][0] + base, info[0][1]), info[1])
-        hogs.append(a_hog)
-    return hogs
-
 def get_v(body):
     v = body.linearVelocity
     v = (v[0] ** 2 + v[1] ** 2) ** (1 / 2)
     return v
-
-
-
-def make_lvl1():
-    base = 12
-
-    birds = []
-    basic = Bird(basic_art, (1.5, .5), 0)
-    birds.append(basic)
-    redwing = Bird(redwing_art, (.5, .5), 0)
-    birds.append(redwing)
-    bluebird = Bird(bluebird_art, (1, .5), 0)
-    birds.append(bluebird)
-
-    hog_infos = [((0.08013515472412092, 1.900923490524292), 0),
-        ((-0.08775157928466815, 4.214478492736816), 0)]
-
-    hogs = make_hogs(hog_infos, base)
-
-    log_infos = [((-0.31868095397949237, 0.9659917950630188),
-                89.97735359718448, 0, False),
-                ((-1.296089839935303, 1.3149046897888184),
-                -90.01380631678484, 1, False),
-                ((0.4888985633850096, 0.9658260345458984),
-                -89.98704563561672, 0, True),
-                ((1.4662330627441404, 1.3149597644805908),
-                -90.00098605171272, 1, True),
-                ((0.050200271606445135, 3.8945581912994385),
-                0.006770065662781008, 2, True),
-                ((0.17996625900268537, 1.5809270143508911),
-                -0.009420229086545365, 1, True),
-                ((-1.2784058570861818, 2.9296600818634033),
-                -90.02471412888934, 1, True),
-                ((1.4740808486938475, 2.9298598766326904),
-                -89.99938095725777, 1, False),
-                ((0.5890486717224119, 4.509588718414307),
-                -89.99241416430435, 0, False),
-                ((-0.5587379455566408, 4.509151935577393),
-                -89.90651770530228, 0, False),
-                ((0.03372793197631818, 5.125909805297852),
-                0.20055960705519169, 2, False),
-                ((1.3810461044311522, 5.760431289672852),
-                0.06462598260640023, 0, True),
-                ((1.0306280136108397, 5.4445648193359375),
-                 0.14901609141179634, 0, True),
-                ((-0.8561241149902346, 5.437365531921387),
-                0.23745059268055208, 0, True),
-                ((-1.2927453041076662, 5.750103950500488),
-                0.8919172645582945, 0, True)]
-
-    logs = make_logs(log_infos,base)
-
-    lvl1 = Level(logs, base, hogs, birds)
-    return lvl1
-
-
-def make_lvl2():
-    base = 12
-
-    birds = []
-    basic = Bird(basic_art, (1.5, .5), 0)
-    birds.append(basic)
-    redwing = Bird(redwing_art, (.5, .5), 0)
-    birds.append(redwing)
-    bluebird = Bird(bluebird_art, (1, .5), 0)
-    birds.append(bluebird)
-
-    hog_infos = [((0, 3.6), 0)]
-    hogs = make_hogs(hog_infos, base)
-
-    log_infos =  [((-.5, 1), 90, 1, True), ((.5, 1), 90, 1, True),
-                ((0, 2), 0, 1, False), ((-.3, 3), 90, 0, False),
-                ((.2, 3), 90, 0, False), ((0, 3.5), 0, 0, True)]
-    logs = make_logs(log_infos,base)
-
-    lvl2 = Level(logs, base, hogs, birds)
-    return lvl2
-
-
-def make_lvl3():
-    base = 12
-
-    birds = []
-    basic = Bird(basic_art, (1.5, .5), 0)
-    birds.append(basic)
-    redwing = Bird(redwing_art, (.5, .5), 0)
-    birds.append(redwing)
-    bluebird = Bird(bluebird_art, (1, .5), 0)
-    birds.append(bluebird)
-
-    hog_infos = [((0, 3), 0), ((-.75, 1), 0), ((.75, 1), 0)]
-    hogs = make_hogs(hog_infos, base)
-
-    log_infos = [((-1.5, 1.0), 90, 0, True), ((1.5, 1.0), 90, 0, True),
-                ((0, 1.0), 90, 0, True), ((0, 1.5), 0, 2, False),
-                ((-.25, 2.0), 90, 0, False), ((.25, 2.0), 90, 0, False),
-                ((0, 2.5), 0, 1, False)]
-    logs = make_logs(log_infos,base)
-
-    lvl3 = Level(logs, base, hogs, birds)
-    return lvl3
 
 
 def draw_sling(color, slingshot, translation):
