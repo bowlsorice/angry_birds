@@ -11,34 +11,12 @@ art = True
 pygame.init()
 
 
-def show_text(text, x, y, color, size):
-    text_list = text.split('*')
-    lines = 0
-    for line in text_list:
-        lines += 1
-    size = int(size * (.9 ** (lines -1)))
-    if lines == 2:
-        y = y - size // 2
-    elif lines == 3:
-        y = y - size * 1.1
-    font = pygame.font.Font("pixels.ttf", size)
-    for line in text_list:
-        text_surf, text_rect = ((font.render(line, True, color)),
-                              (font.render(line, True, color)).get_rect())
-        text_rect.center = (x, y)
-        screen.blit(text_surf, text_rect)
-        y += size
-
 
 def make_logs(info_list,base):
     logs = []
     for each in info_list:
-        if each [-1] == "ice":
-            a_log = Log((each[0][0]+base,each[0][1]),
-                    each[1], each[2],is_ice=True)
-        else:
-            a_log = Log((each[0][0]+base,each[0][1]),
-                    each[1], each[2])
+        a_log = Log((each[0][0]+base,each[0][1]),
+                each[1], each[2],each[3])
         logs.append(a_log)
     return logs
 
@@ -70,8 +48,22 @@ def make_lvl1():
     hog_infos = [((-5,1),0)]#((0, 2.0), 0)]
     hogs = make_hogs(hog_infos, base)
 
-    log_infos = [((-1, 1.0), 90, 0), ((0, 1.2), 90, 1), ((1, 2), 90, 2),
-                ((-5,8),0,0)]
+    log_infos = [((0.8301303863525389, 2.114804744720459),
+                -89.97555042724359, 2, False),
+                ((-0.8803164482116701, 2.114821434020996),
+                -90.10456587047595, 2, False),
+                ((-0.9023215293884279, 3.8794472217559814),
+                -0.4607107203084631, 1, True),
+                ((0.7402599334716795, 3.879000186920166),
+                0.5155584200041312, 1, True),
+                ((-0.11345977783203143, 4.18698787689209),
+                -0.12805099917721546, 0, True),
+                ((-1.6251546859741213, 4.200212001800537),
+                0.09900698043348687, 0, True),
+                ((-0.10003204345703143, 5.150683879852295),
+                -90.07182194359493, 1, True),
+                ((1.330567169189453, 4.198427200317383),
+                0.45659110238274075, 0, True)]
     logs = make_logs(log_infos,base)
 
     lvl1 = Level(logs, base, hogs, birds)
@@ -92,9 +84,9 @@ def make_lvl2():
     hog_infos = [((0, 3.6), 0)]
     hogs = make_hogs(hog_infos, base)
 
-    log_infos = [((-.5, 1), 90, 1, "ice"), ((.5, 1), 90, 1, "ice"),
-                 ((0, 2), 0, 1), ((-.3, 3), 90, 0),
-                 ((.2, 3), 90, 0), ((0, 3.5), 0, 0, "ice")]
+    log_infos = [((-.5, 1), 90, 1, True), ((.5, 1), 90, 1, True),
+                 ((0, 2), 0, 1, False), ((-.3, 3), 90, 0, False),
+                 ((.2, 3), 90, 0, False), ((0, 3.5), 0, 0, True)]
     logs = make_logs(log_infos,base)
 
     lvl2 = Level(logs, base, hogs, birds)
@@ -115,10 +107,10 @@ def make_lvl3():
     hog_infos = [((0, 3), 0), ((-.75, 1), 0), ((.75, 1), 0)]
     hogs = make_hogs(hog_infos, base)
 
-    log_infos = [((-1.5, 1.0), 90, 0, "ice"), ((1.5, 1.0), 90, 0, "ice"),
-                ((0, 1.0), 90, 0, "ice"), ((0, 1.5), 0, 2),
-                ((-.25, 2.0), 90, 0), ((.25, 2.0), 90, 0),
-                ((0, 2.5), 0, 1)]
+    log_infos = [((-1.5, 1.0), 90, 0, True), ((1.5, 1.0), 90, 0, True),
+                ((0, 1.0), 90, 0, True), ((0, 1.5), 0, 2, False),
+                ((-.25, 2.0), 90, 0, False), ((.25, 2.0), 90, 0, False),
+                ((0, 2.5), 0, 1, False)]
     logs = make_logs(log_infos,base)
 
     lvl3 = Level(logs, base, hogs, birds)
@@ -241,10 +233,10 @@ while running:
         v = get_v(item.body)
         if abs(v - item.lastv) > item.minv:
             item.kill()
-        elif abs(item.body.linearVelocity[1])<.5:
+        elif abs(v - item.lastv)<.1: #add in conditions so the fixtures must be touching!!
             for contact in item.body.contacts:
                 other_v = get_v(contact.other)
-                if other_v>item.minv:
+                if other_v>item.minv and not item.dead:
                     item.kill()
 
 

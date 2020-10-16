@@ -102,23 +102,24 @@ class Scene(Thing):
         self.pos_of = self.body.position
         world.DestroyBody(self.body)
         self.body = None
-    def drawDeath(self,translation,frame):
+    def drawDeath(self, translation, frame):
         rect = self.frames[frame].get_rect(
-            center=((self.pos_of[0]-translation[0])*PPM,
-            VIEW[1]-(self.pos_of[1]-translation[1])*PPM))
-        screen.blit(self.frames[frame],rect.topleft)
+            center=((self.pos_of[0] - translation[0]) * PPM,
+            VIEW[1]-(self.pos_of[1] - translation[1]) * PPM))
+        screen.blit(self.frames[frame], rect.topleft)
 
 class Hog(Scene):
-    def __init__(self,pos,angle):
+    def __init__(self, pos, angle):
         self.dead  = False
         self.minv = 1.5
-        super().__init__(hedgehog_art,pos,angle,CIRCLE,density=4)
+        super().__init__(hedgehog_art, pos, angle, CIRCLE, density=4)
         self.frames = [puff1, puff2, puff3]
 
 
 class Log(Scene):
-    def __init__(self,pos,angle,shape, is_ice=False):
+    def __init__(self, pos, angle, shape, is_ice):
         self.dead = False
+        self.is_ice = is_ice
         if shape == 0:
             if is_ice:
                 img = ice_short_art
@@ -141,6 +142,7 @@ class Log(Scene):
         else:
             self.frames = [shatter1, shatter2, shatter3]
             self.minv = 4
+        self.shape = shape
 
 class Level():
     def __init__(self,logs,base,hogs,birds):
@@ -149,3 +151,22 @@ class Level():
         self.hogs = hogs
         self.birds = birds
         self.num_hogs = len(hogs)
+
+
+def show_text(text, x, y, color, size):
+    text_list = text.split('*')
+    lines = 0
+    for line in text_list:
+        lines += 1
+    size = int(size * (.9 ** (lines -1)))
+    if lines == 2:
+        y = y - size // 2
+    elif lines == 3:
+        y = y - size * 1.1
+    font = pygame.font.Font("pixels.ttf", size)
+    for line in text_list:
+        text_surf, text_rect = ((font.render(line, True, color)),
+                              (font.render(line, True, color)).get_rect())
+        text_rect.center = (x, y)
+        screen.blit(text_surf, text_rect)
+        y += size
