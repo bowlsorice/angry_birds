@@ -131,7 +131,6 @@ while running:
 
     for item in alive:
         if item.contact_impulse>item.min_impulse:
-            print(item.min_impulse)
             item.kill()
 
     for hog in level.hogs:
@@ -188,7 +187,7 @@ while running:
             pan_back = False
 
     hogs_down = level.num_hogs - len(level.hogs)
-    if hogs_down == level.num_hogs:
+    if hogs_down == level.num_hogs and level_num<len(levels)-1:
         for item in level.hogs + level.logs + level.birds:
             if item in level.birds:
                 world.DestroyBody(item.body)
@@ -199,9 +198,9 @@ while running:
                     item.body = None
         in_sling = None
         TRANS = 0, 0
-        if level_num + 1 <= len(levels):
-            level = levels[level_num + 1]()
-            level_num += 1
+        level = levels[level_num + 1]()
+        level_num += 1
+
 
     if art:
         screen.fill((128, 216, 255))
