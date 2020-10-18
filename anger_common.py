@@ -2,6 +2,7 @@
 import pygame
 import Box2D
 from Box2D.b2 import world
+from Box2D import b2ContactListener
 
 CIRCLE = 0
 BOX = 1
@@ -23,7 +24,18 @@ pygame.init()
 screen = pygame.display.set_mode((0,0),pygame.FULLSCREEN)
 clock = pygame.time.Clock()
 
-world = world(gravity=(0,-10), doSleep=True)
+class myContactListener(b2ContactListener):
+    def __init__(self):
+        b2ContactListener.__init__(self)
+    def PostSolve(self, contact, impulse):
+        thing_a = contact.fixtureA.body.userData
+        thing_b = contact.fixtureB.body.userData
+        if impulse.normalImpulses[0]>.5:
+            thing_a.contact_impulse = impulse.normalImpulses[0]
+            thing_b.contact_impulse = impulse.normalImpulses[0]
+
+
+world = world(gravity=(0,-10), doSleep=True, contactListener=myContactListener())
 
 #add art imports
 redwing_art = pygame.image.load("anger_art/redwing.png").convert_alpha()

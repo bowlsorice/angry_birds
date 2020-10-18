@@ -12,11 +12,14 @@ class Thing():
         self.img = img
         angle = rotation * (pi/180)
         self.shape = shape
+        self.contact_impulse = 0
+        self.min_impulse = 1.2
         if static:
-            self.body = world.CreateStaticBody(position=(pos),angle=angle)
+            self.body = world.CreateStaticBody(position=(pos),angle=angle,
+                        userData=self)
         else:
             self.body = world.CreateDynamicBody(position=(pos),
-                fixedRotation=False,angle=angle)
+                        fixedRotation=False,angle=angle, userData = self)
         if shape == CIRCLE:
                 radius = self.img.get_rect().width*.6/2/PPM
                 self.fix = self.body.CreateCircleFixture(radius=radius,
@@ -82,8 +85,10 @@ class Slingshot():
             (VIEW[1]-self.rect.topleft[1]-10)/PPM)
         anchorb = ((self.rect.topright[0]-10)/PPM,
             (VIEW[1]-self.rect.topright[1]-10)/PPM)
-        self.anchora = world.CreateStaticBody(position=(anchora),angle=0)
-        self.anchorb = world.CreateStaticBody(position=(anchorb),angle=0)
+        self.anchora = world.CreateStaticBody(position=(anchora),angle=0,
+                        userData=self)
+        self.anchorb = world.CreateStaticBody(position=(anchorb),angle=0,
+                        userData=self)
     def draw(self,translation):
         screen.blit(self.img,(self.rect.x-(translation[0]*PPM),
             (self.rect.y+(translation[1]*PPM))))
@@ -111,26 +116,25 @@ class Scene(Thing):
 class Hog(Scene):
     def __init__(self, pos, angle):
         self.dead  = False
-        self.minv = 1.5
         super().__init__(hedgehog_art, pos, angle, CIRCLE, density=4)
         self.frames = [puff1, puff2, puff3]
 
 
 class Log(Scene):
-    def __init__(self, pos, angle, shape, is_ice):
+    def __init__(self, pos, angle, log_shape, is_ice):
         self.dead = False
         self.is_ice = is_ice
-        if shape == 0:
+        if log_shape == 0:
             if is_ice:
                 img = ice_short_art
             else:
                 img = log_short_art
-        elif shape == 1:
+        elif log_shape == 1:
             if is_ice:
                 img = ice_long_art
             else:
                 img = log_long_art
-        elif shape == 2:
+        elif log_shape == 2:
             if is_ice:
                 img = ice_looong_art
             else:
@@ -138,11 +142,10 @@ class Log(Scene):
         super().__init__(img,pos,angle,BOX)
         if is_ice:
             self.frames = [ice_shatter1, ice_shatter2, ice_shatter3]
-            self.minv = 1
+            self.min_impulse = .8
         else:
             self.frames = [shatter1, shatter2, shatter3]
-            self.minv = 4
-        self.shape = shape
+        self.log_shape = log_shape
 
 class Level():
     def __init__(self,logs,base,hogs,birds):

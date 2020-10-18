@@ -11,7 +11,6 @@ art = True
 
 pygame.init()
 
-
 def get_v(body):
     v = body.linearVelocity
     v = (v[0] ** 2 + v[1] ** 2) ** (1 / 2)
@@ -60,7 +59,7 @@ pan_stop = 0
 slingshot = Slingshot(slingshot_art, (1.5, 1.4))
 ground = Thing(ground_art, (10, 0), 0, BOX, static=True)
 
-levels = [make_lvl1, make_lvl2, make_lvl3]
+levels = [make_lvl1, make_lvl3, make_lvl2, make_lvl4]
 level = levels[0]()
 level_num = 0
 
@@ -131,15 +130,9 @@ while running:
             alive.append(item)
 
     for item in alive:
-        v = get_v(item.body)
-        if abs(v - item.lastv) > item.minv:
+        if item.contact_impulse>item.min_impulse:
+            print(item.min_impulse)
             item.kill()
-        elif abs(v - item.lastv)<.1: #add in conditions so the fixtures must be touching!!
-            for contact in item.body.contacts:
-                other_v = get_v(contact.other)
-                if other_v>item.minv and not item.dead:
-                    item.kill()
-
 
     for hog in level.hogs:
         if not hog.dead:

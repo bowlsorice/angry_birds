@@ -128,11 +128,12 @@ log_infos = []
 hog_infos = []
 for item in items:
     if type(item) == Log:
-        log_infos.append(((item.body.position[0]-7.2,item.body.position[1]),
-                        item.body.angle*(180/pi), item.shape, item.is_ice))
+        log_infos.append(((round(item.body.position[0]-7.2,4),
+                        round(item.body.position[1],4)),
+                        item.body.angle*(180/pi), item.log_shape, item.is_ice))
     elif type(item) == Hog:
-        hog_infos.append(((item.body.position[0]-7.2,item.body.position[1]),
-                        0))
+        hog_infos.append(((round(item.body.position[0]-7.2,4),
+                        round(item.body.position[1]),4),0))
 print("logs: "+str(log_infos))
 print("hogs: "+str(hog_infos))
 pygame.quit()
