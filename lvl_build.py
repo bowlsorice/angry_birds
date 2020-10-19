@@ -5,8 +5,7 @@ from anger_sprites import *
 running = True
 TRANS = 0, 0
 ice = False
-BLUE = (165,242,243)
-RED = (255,0,0)
+
 
 
 def get_world_pos():

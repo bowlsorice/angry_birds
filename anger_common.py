@@ -10,6 +10,10 @@ BOX = 1
 WHITE = (255,255,255)
 BLACK = (0,0,0)
 MAROON = (128,0,0)
+YELLOW = (255, 255, 102)
+BLUE = (165,242,243)
+RED = (255,0,0)
+SKY = (128, 216, 255)
 
 PPM = 100
 VIEW = 1440,900
@@ -56,6 +60,7 @@ hedgehog_art = pygame.transform.flip(hedgehog_art, True, False)
 ground_art = pygame.image.load("anger_art/ground.png").convert_alpha()
 slingshot_art = pygame.image.load("anger_art/slingshot.png").convert_alpha()
 background_art = pygame.image.load("anger_art/background.png").convert_alpha()
+back_fall_art = pygame.image.load("anger_art/back_fall.png").convert_alpha()
 
 puff1, puff2, puff3 = (pygame.image.load("anger_art/puff1.png").convert_alpha(),
         pygame.image.load("anger_art/puff2.png").convert_alpha(),

@@ -5,7 +5,6 @@ from lvl_makers import *
 
 TRANS = 0, 0
 
-game = True
 running = True
 art = True
 
@@ -52,9 +51,17 @@ def draw_sling(color, slingshot, translation):
 in_sling = None
 time_shot = -1000
 clicked = False
+
 pan_to = False
 pan_back = False
 pan_stop = 0
+
+game = True
+
+m_main = False
+main_buttons = [Button(SKY,WHITE,"start",40,(620,650,200,75))]
+
+background = back_fall_art
 
 slingshot = Slingshot(slingshot_art, (1.5, 1.4))
 ground = Thing(ground_art, (10, 0), 0, BOX, static=True)
@@ -204,8 +211,8 @@ while running:
 
 
         if art:
-            screen.fill((128, 216, 255))
-            screen.blit(background_art, (-1 * TRANS[0] * PPM, TRANS[1] * PPM))
+            screen.fill(SKY)
+            screen.blit(background, (-1 * TRANS[0] * PPM, TRANS[1] * PPM))
             ground.draw(TRANS)
             slingshot.draw(TRANS)
             draw_sling(SLING_COLOR, slingshot, TRANS)
@@ -222,10 +229,10 @@ while running:
                 elif not item.dead:
                     item.draw(TRANS)
             show_text(str(hogs_down) +
-                      "/" + str(level.num_hogs), 720, 100, (255, 255, 102), 40)
+                      "/" + str(level.num_hogs), 720, 100, YELLOW, 40)
 
         elif not art:
-            screen.fill((0, 0, 0))
+            screen.fill(BLACK)
             ground.draw_shape(TRANS)
             for log in level.logs:
                 if not log.dead:
@@ -236,6 +243,16 @@ while running:
                 if not hog.dead:
                     hog.draw_shape(TRANS)
             draw_sling(WHITE, slingshot, TRANS)
+
+    elif m_main:
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                running = False
+
+        screen.blit(background, (0,0))
+        show_text("anger birbs!", 720, 225, YELLOW, 100)
+        for each in main_buttons:
+            each.draw()
 
     pygame.display.flip()
     clock.tick(FPS)
