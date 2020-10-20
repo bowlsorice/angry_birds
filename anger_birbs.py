@@ -76,7 +76,7 @@ level_buttons.append(pause_button)
 
 slingshot = Slingshot(slingshot_art, (1.5, 1.4))
 
-levels = [make_lvl1, make_lvl2, make_lvl3, make_lvl4]
+levels = [make_lvl1, make_lvl2, make_lvl3]
 level = levels[0]()
 level_num = 0
 

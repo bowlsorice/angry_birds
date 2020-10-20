@@ -116,7 +116,7 @@ class Scene(Thing):
 class Hog(Scene):
     def __init__(self, pos, angle):
         self.dead  = False
-        self.min_impulse = 1.0
+        self.min_impulse = .6
         super().__init__(hedgehog_art, pos, angle, CIRCLE, density=4)
         self.frames = [puff1, puff2, puff3]
 

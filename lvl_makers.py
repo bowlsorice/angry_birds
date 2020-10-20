@@ -87,34 +87,11 @@ def make_lvl2():
 
     logs = make_logs(log_infos,base)
 
-    lvl2 = Level(logs, base, hogs, birds, background_art, ground_art)
+    lvl2 = Level(logs, base, hogs, birds, back_fall_art, ground_fall_art)
     return lvl2
 
 
 def make_lvl3():
-    base = 12
-
-    birds = []
-    basic = Bird(basic_art, (1.5, .5), 0)
-    birds.append(basic)
-    redwing = Bird(redwing_art, (.5, .5), 0)
-    birds.append(redwing)
-    bluebird = Bird(bluebird_art, (1, .5), 0)
-    birds.append(bluebird)
-
-    hog_infos = [((0, 3), 0), ((-.75, 1), 0), ((.75, 1), 0)]
-    hogs = make_hogs(hog_infos, base)
-
-    log_infos = [((-1.5, 1.0), 90, 0, True), ((1.5, 1.0), 90, 0, True),
-                ((0, 1.0), 90, 0, True), ((0, 1.5), 0, 2, False),
-                ((-.25, 2.0), 90, 0, False), ((.25, 2.0), 90, 0, False),
-                ((0, 2.5), 0, 1, False)]
-    logs = make_logs(log_infos,base)
-
-    lvl3 = Level(logs, base, hogs, birds, back_fall_art, ground_fall_art)
-    return lvl3
-
-def make_lvl4():
     base = 12
 
     birds = []
@@ -142,5 +119,5 @@ def make_lvl4():
 
     logs = make_logs(log_infos,base)
 
-    lvl4 = Level(logs, base, hogs, birds, back_sunset_art, ground__sunset_art)
+    lvl4 = Level(logs, base, hogs, birds, back_sunset_art, ground_sunset_art)
     return lvl4
