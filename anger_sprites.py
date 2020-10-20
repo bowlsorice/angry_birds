@@ -157,7 +157,7 @@ class Level():
         self.birds = birds
         self.num_hogs = len(hogs)
 
-class Button:
+class Button():
     def __init__(self,colora,colorb,text,textsize,rect):
         self.rect = pygame.Rect(rect)
         self.colora = colora
@@ -168,6 +168,14 @@ class Button:
         pygame.draw.rect(screen,self.colora,self.rect)
         show_text(self.text,self.rect[0]+self.rect[2]/2,
                     self.rect[1]+self.size,self.colorb,self.size)
+class IconButton():
+    def __init__(self,img,x,y):
+        self.img = img
+        self.rect = img.get_rect()
+        self.rect = pygame.rect.Rect(x-self.rect.width/2, y-self.rect.height/2,
+                    self.rect[2], self.rect[3])
+    def draw(self):
+        screen.blit(self.img, self.rect.topleft)
 
 
 def show_text(text, x, y, color, size):

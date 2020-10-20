@@ -61,6 +61,19 @@ game = True
 m_main = False
 main_buttons = [Button(SKY,WHITE,"start",40,(620,650,200,75))]
 
+m_pause = False
+pause_buttons = []
+unpause = Button(MAROON,WHITE,"unpause",30,(645,420,150,50))
+quit_to_main = Button(MAROON,WHITE,"quit",30,(670,560,100,50))
+pause_level_select = Button(MAROON,WHITE,"level select",30,(605,490,230,50))
+pause_buttons.append(unpause)
+pause_buttons.append(quit_to_main)
+pause_buttons.append(pause_level_select)
+
+level_buttons = []
+pause_button = IconButton(pause_art,100,100)
+level_buttons.append(pause_button)
+
 slingshot = Slingshot(slingshot_art, (1.5, 1.4))
 ground = Thing(ground_art, (10, 0), 0, BOX, static=True)
 
@@ -71,141 +84,162 @@ level_num = 0
 while running:
     if game:
         for event in pygame.event.get():
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                pos = pygame.mouse.get_pos()
-                pos = (pos[0] / PPM) + TRANS[0], (VIEW[1] - pos[1]) / PPM + TRANS[1]
-                if in_sling is not None:
-                    if in_sling.fix.TestPoint(pos):
-                        clicked = True
-            elif event.type == pygame.MOUSEBUTTONUP and clicked:
-                clicked = False
-                in_sling.launch(screen, slingshot, TRANS)
-                in_sling.shot = True
-                in_sling = None
-                time_shot = pygame.time.get_ticks()
-                pan_to = True
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    running = False
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                running = False
+            if not m_pause:
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    pos = pygame.mouse.get_pos()
+                    pos = ((pos[0] / PPM) + TRANS[0],
+                            (VIEW[1] - pos[1]) / PPM + TRANS[1])
+                    if in_sling is not None:
+                        if in_sling.fix.TestPoint(pos):
+                            clicked = True
+                    pixel_pos = pygame.mouse.get_pos()
+                    if (pause_button.rect.left<pixel_pos[0]<pause_button.rect.right
+                        and pause_button.rect.top<pixel_pos[1]<pause_button.rect.bottom):
+                        m_pause = True
+                elif event.type == pygame.MOUSEBUTTONUP and clicked:
+                    clicked = False
+                    in_sling.launch(screen, slingshot, TRANS)
+                    in_sling.shot = True
+                    in_sling = None
+                    time_shot = pygame.time.get_ticks()
+                    pan_to = True
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        running = False
+            elif m_pause:
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    pos = pygame.mouse.get_pos()
+                    if (unpause.rect.left<pos[0]<unpause.rect.right
+                        and unpause.rect.top<pos[1]<unpause.rect.bottom):
+                        m_pause = False
+                    elif (quit_to_main.rect.left<pos[0]<quit_to_main.rect.right
+                        and quit_to_main.rect.top<pos[1]<quit_to_main.rect.bottom):
+                        game = False
+                        m_main = True
 
-        if in_sling == None:
-            birds_not_shot = 0
-            for bird in level.birds:
-                if not bird.shot:
-                    birds_not_shot += 1
-            if birds_not_shot > 0 and pygame.time.get_ticks() - time_shot >= 1000:
-                i = 0
-                while in_sling == None:
-                    if not level.birds[i].shot:
-                        level.birds[i].load(slingshot)
-                        in_sling = level.birds[i]
-                        level.birds[i].body.awake = False
-                        level.birds[i].shot = True
-                    else:
-                        i += 1
-        else:
-            if clicked:
-                posa = pygame.mouse.get_pos()
-                posa = ((posa[0] / PPM) + TRANS[0],
-                        (VIEW[1] - posa[1]) / PPM + TRANS[1])
-                posb = slingshot.rect.centerx, slingshot.rect.y + 10
-                posb = posb[0] / PPM, (VIEW[1] - posb[1]) / PPM
-                length = (((posb[0] - posa[0]) ** 2 +
-                           (posb[1] - posa[1]) ** 2) ** (1 / 2))
-                if length <= 1.0:
-                    in_sling.body.transform = (posa, 0)
-                else:
-                    reduct = 1.0 / length
-                    move = (posb[0] - (posb[0] - posa[0]) * reduct,
-                            posb[1] - (posb[1] - posa[1]) * reduct)
-                    in_sling.body.transform = (move, in_sling.body.angle)
+        if not m_pause:
+            if in_sling == None:
+                birds_not_shot = 0
+                for bird in level.birds:
+                    if not bird.shot:
+                        birds_not_shot += 1
+                if (birds_not_shot > 0 and
+                    pygame.time.get_ticks() - time_shot >= 1000):
+                    i = 0
+                    while in_sling == None:
+                        if not level.birds[i].shot:
+                            level.birds[i].load(slingshot)
+                            in_sling = level.birds[i]
+                            level.birds[i].body.awake = False
+                            level.birds[i].shot = True
+                        else:
+                            i += 1
             else:
-                in_sling.body.awake = False
+                if clicked:
+                    posa = pygame.mouse.get_pos()
+                    posa = ((posa[0] / PPM) + TRANS[0],
+                            (VIEW[1] - posa[1]) / PPM + TRANS[1])
+                    posb = slingshot.rect.centerx, slingshot.rect.y + 10
+                    posb = posb[0] / PPM, (VIEW[1] - posb[1]) / PPM
+                    length = (((posb[0] - posa[0]) ** 2 +
+                               (posb[1] - posa[1]) ** 2) ** (1 / 2))
+                    if length <= 1.0:
+                        in_sling.body.transform = (posa, 0)
+                    else:
+                        reduct = 1.0 / length
+                        move = (posb[0] - (posb[0] - posa[0]) * reduct,
+                                posb[1] - (posb[1] - posa[1]) * reduct)
+                        in_sling.body.transform = (move, in_sling.body.angle)
+                else:
+                    in_sling.body.awake = False
 
-        for item in level.hogs + level.logs:
-            if not item.dead:
-                lastv = get_v(item.body)
-                item.lastv = lastv
+            for item in level.hogs + level.logs:
+                if not item.dead:
+                    lastv = get_v(item.body)
+                    item.lastv = lastv
 
-        world.Step(TIME_STEP / 2, 5, 5)
-        world.Step(TIME_STEP / 2, 5, 5)
+            world.Step(TIME_STEP / 2, 5, 5)
+            world.Step(TIME_STEP / 2, 5, 5)
 
-        alive = []
-        for item in level.hogs + level.logs:
-            if not item.dead:
-                alive.append(item)
+            alive = []
+            for item in level.hogs + level.logs:
+                if not item.dead:
+                    alive.append(item)
 
-        for item in alive:
-            if item.contact_impulse>item.min_impulse:
-                item.kill()
+            for item in alive:
+                if item.contact_impulse>item.min_impulse:
+                    item.kill()
 
-        for hog in level.hogs:
-            if not hog.dead:
-                if hog.body.position[1] < 0:
-                    world.DestroyBody(hog.body)
-                    level.hogs.remove(hog)
-                    hog.body = None
-        for bird in level.birds:
-            if bird.body.position[1] < 0:
-                world.DestroyBody(bird.body)
-                level.birds.remove(bird)
-                bird.body = None
-        for log in level.logs:
-            if not log.dead:
-                if log.body.position[1] < 0:
-                    world.DestroyBody(log.body)
-                    level.logs.remove(log)
-                    log.body = None
-
-        for hog in level.hogs:
-            if hog.dead and pygame.time.get_ticks() - hog.time_of >= 300:
-                level.hogs.remove(hog)
-        for log in level.logs:
-            if log.dead and pygame.time.get_ticks() - log.time_of >= 300:
-                level.logs.remove(log)
-
-        if (pan_back is False and TRANS[0] == level.base - VIEW[0] / PPM // 2
-                and pygame.time.get_ticks() - pan_stop > 5000):
-            pan_back = True
-            all = []
-            for log in level.logs:
-                if not log.dead and abs(log.body.position[0]-level.base)<3:
-                    all.append(log)
             for hog in level.hogs:
-                if not hog.dead and abs(hog.body.position[0]-level.base)<3:
-                    all.append(hog)
-            for each in all:
-                v = get_v(each.body)
-                if abs(v) > .2:
+                if not hog.dead:
+                    if hog.body.position[1] < 0:
+                        world.DestroyBody(hog.body)
+                        level.hogs.remove(hog)
+                        hog.body = None
+            for bird in level.birds:
+                if bird.body.position[1] < 0:
+                    world.DestroyBody(bird.body)
+                    level.birds.remove(bird)
+                    bird.body = None
+            for log in level.logs:
+                if not log.dead:
+                    if log.body.position[1] < 0:
+                        world.DestroyBody(log.body)
+                        level.logs.remove(log)
+                        log.body = None
+
+            for hog in level.hogs:
+                if hog.dead and pygame.time.get_ticks() - hog.time_of >= 300:
+                    level.hogs.remove(hog)
+            for log in level.logs:
+                if log.dead and pygame.time.get_ticks() - log.time_of >= 300:
+                    level.logs.remove(log)
+
+            if (pan_back is False and TRANS[0] == level.base - VIEW[0] / PPM // 2
+                    and pygame.time.get_ticks() - pan_stop > 5000):
+                pan_back = True
+                all = []
+                for log in level.logs:
+                    if not log.dead and abs(log.body.position[0]-level.base)<3:
+                        all.append(log)
+                for hog in level.hogs:
+                    if not hog.dead and abs(hog.body.position[0]-level.base)<3:
+                        all.append(hog)
+                for each in all:
+                    v = get_v(each.body)
+                    if abs(v) > .2:
+                        pan_back = False
+
+            if pan_to:
+                pan_back = False
+                if TRANS[0] != level.base - VIEW[0] / PPM // 2:
+                    TRANS = TRANS[0] + .25, TRANS[1]
+                else:
+                    pan_to = False
+                    pan_stop = pygame.time.get_ticks()
+            elif pan_back:
+                if TRANS[0] != 0:
+                    TRANS = TRANS[0] - .25, TRANS[1]
+                else:
                     pan_back = False
 
-        if pan_to:
-            pan_back = False
-            if TRANS[0] != level.base - VIEW[0] / PPM // 2:
-                TRANS = TRANS[0] + .25, TRANS[1]
-            else:
-                pan_to = False
-                pan_stop = pygame.time.get_ticks()
-        elif pan_back:
-            if TRANS[0] != 0:
-                TRANS = TRANS[0] - .25, TRANS[1]
-            else:
-                pan_back = False
-
-        hogs_down = level.num_hogs - len(level.hogs)
-        if hogs_down == level.num_hogs and level_num<len(levels)-1:
-            for item in level.hogs + level.logs + level.birds:
-                if item in level.birds:
-                    world.DestroyBody(item.body)
-                    item.body = None
-                else:
-                    if not item.dead:
+            hogs_down = level.num_hogs - len(level.hogs)
+            if hogs_down == level.num_hogs and level_num<len(levels)-1:
+                for item in level.hogs + level.logs + level.birds:
+                    if item in level.birds:
                         world.DestroyBody(item.body)
                         item.body = None
-            in_sling = None
-            TRANS = 0, 0
-            level = levels[level_num + 1]()
-            level_num += 1
+                    else:
+                        if not item.dead:
+                            world.DestroyBody(item.body)
+                            item.body = None
+                in_sling = None
+                TRANS = 0, 0
+                level = levels[level_num + 1]()
+                level_num += 1
+
 
 
         if art:
@@ -226,8 +260,20 @@ while running:
                         item.drawDeath(TRANS, 2)
                 elif not item.dead:
                     item.draw(TRANS)
-            show_text(str(hogs_down) +
-                      "/" + str(level.num_hogs), 720, 100, YELLOW, 40)
+            if not m_pause:
+                show_text(str(hogs_down) +
+                        "/" + str(level.num_hogs), 720, 100, MAROON, 40)
+                for each in level_buttons:
+                    each.draw()
+            else:
+                pygame.draw.rect(screen,WHITE,(420,200,600,500))
+                pygame.draw.rect(screen,MAROON,(430,210,580,480),5)
+                show_text("paused",720,346,MAROON,80)
+                for each in pause_buttons:
+                    each.draw()
+                show_text(str(hogs_down) +
+                        "/" + str(level.num_hogs), 940, 260, MAROON, 40)
+
 
         elif not art:
             screen.fill(BLACK)
@@ -248,9 +294,10 @@ while running:
                 running = False
 
         screen.blit(back_sunset_art, (0,0))
-        show_text("anger birbs!", 720, 225, YELLOW, 100)
+        show_text("anger birbs!", 720, 225, MAROON, 100)
         for each in main_buttons:
             each.draw()
+
 
     pygame.display.flip()
     clock.tick(FPS)
