@@ -234,7 +234,7 @@ while running:
                         if not item.dead:
                             world.DestroyBody(item.body)
                             item.body = None
-                    world.DestroyBody(level.ground.body)
+                world.DestroyBody(level.ground.body)
                 in_sling = None
                 TRANS = 0, 0
                 level = levels[level_num + 1]()
