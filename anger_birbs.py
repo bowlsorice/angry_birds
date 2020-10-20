@@ -61,12 +61,10 @@ game = True
 m_main = False
 main_buttons = [Button(SKY,WHITE,"start",40,(620,650,200,75))]
 
-background = back_fall_art
-
 slingshot = Slingshot(slingshot_art, (1.5, 1.4))
 ground = Thing(ground_art, (10, 0), 0, BOX, static=True)
 
-levels = [make_lvl1, make_lvl3, make_lvl2, make_lvl4]
+levels = [make_lvl1, make_lvl2, make_lvl3, make_lvl4]
 level = levels[0]()
 level_num = 0
 
@@ -171,10 +169,10 @@ while running:
             pan_back = True
             all = []
             for log in level.logs:
-                if not log.dead:
+                if not log.dead and abs(log.body.position[0]-level.base)<3:
                     all.append(log)
             for hog in level.hogs:
-                if not hog.dead:
+                if not hog.dead and abs(hog.body.position[0]-level.base)<3:
                     all.append(hog)
             for each in all:
                 v = get_v(each.body)
@@ -212,7 +210,7 @@ while running:
 
         if art:
             screen.fill(SKY)
-            screen.blit(background, (-1 * TRANS[0] * PPM, TRANS[1] * PPM))
+            screen.blit(level.background, (-1 * TRANS[0] * PPM, TRANS[1] * PPM))
             ground.draw(TRANS)
             slingshot.draw(TRANS)
             draw_sling(SLING_COLOR, slingshot, TRANS)
@@ -249,7 +247,7 @@ while running:
             if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 running = False
 
-        screen.blit(background, (0,0))
+        screen.blit(back_sunset_art, (0,0))
         show_text("anger birbs!", 720, 225, YELLOW, 100)
         for each in main_buttons:
             each.draw()

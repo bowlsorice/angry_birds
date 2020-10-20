@@ -61,6 +61,7 @@ ground_art = pygame.image.load("anger_art/ground.png").convert_alpha()
 slingshot_art = pygame.image.load("anger_art/slingshot.png").convert_alpha()
 background_art = pygame.image.load("anger_art/background.png").convert_alpha()
 back_fall_art = pygame.image.load("anger_art/back_fall.png").convert_alpha()
+back_sunset_art = pygame.image.load("anger_art/back_sunset.png").convert_alpha()
 
 puff1, puff2, puff3 = (pygame.image.load("anger_art/puff1.png").convert_alpha(),
         pygame.image.load("anger_art/puff2.png").convert_alpha(),

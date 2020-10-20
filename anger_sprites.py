@@ -149,7 +149,8 @@ class Log(Scene):
         self.log_shape = log_shape
 
 class Level():
-    def __init__(self,logs,base,hogs,birds):
+    def __init__(self,logs,base,hogs,birds,background):
+        self.background = background
         self.base = base
         self.logs = logs
         self.hogs = hogs
