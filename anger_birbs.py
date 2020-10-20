@@ -26,7 +26,7 @@ def draw_sling(color, slingshot, translation):
                          ((in_sling.body.position[0]
                           - translation[0]) * PPM,
                           VIEW[1] - (in_sling.body.position[1]
-                           - translation[1]) * PPM), 4)
+                           - translation[1]) * PPM), 5)
         pygame.draw.line(screen, color,
                          ((slingshot.anchorb.position[0]
                           - translation[0]) * PPM,
@@ -35,7 +35,7 @@ def draw_sling(color, slingshot, translation):
                          ((in_sling.body.position[0]
                           - translation[0]) * PPM,
                           VIEW[1] - (in_sling.body.position[1]
-                           - translation[1]) * PPM), 4)
+                           - translation[1]) * PPM), 5)
     else:
         pygame.draw.line(screen, color,
                          ((slingshot.anchora.position[0]
@@ -45,7 +45,7 @@ def draw_sling(color, slingshot, translation):
                          ((slingshot.anchorb.position[0]
                           - translation[0]) * PPM,
                           VIEW[1] - (slingshot.anchorb.position[1]
-                           - translation[1]) * PPM), 4)
+                           - translation[1]) * PPM), 5)
 
 
 in_sling = None
@@ -63,9 +63,9 @@ main_buttons = [Button(SKY,WHITE,"start",40,(620,650,200,75))]
 
 m_pause = False
 pause_buttons = []
-unpause = Button(MAROON,WHITE,"unpause",30,(645,420,150,50))
-quit_to_main = Button(MAROON,WHITE,"quit",30,(670,560,100,50))
-pause_level_select = Button(MAROON,WHITE,"level select",30,(605,490,230,50))
+unpause = Button(THEME,WHITE,"unpause",30,(645,420,150,50))
+quit_to_main = Button(THEME,WHITE,"quit",30,(670,560,100,50))
+pause_level_select = Button(THEME,WHITE,"level select",30,(605,490,230,50))
 pause_buttons.append(unpause)
 pause_buttons.append(quit_to_main)
 pause_buttons.append(pause_level_select)
@@ -75,7 +75,6 @@ pause_button = IconButton(pause_art,100,100)
 level_buttons.append(pause_button)
 
 slingshot = Slingshot(slingshot_art, (1.5, 1.4))
-ground = Thing(ground_art, (10, 0), 0, BOX, static=True)
 
 levels = [make_lvl1, make_lvl2, make_lvl3, make_lvl4]
 level = levels[0]()
@@ -235,6 +234,7 @@ while running:
                         if not item.dead:
                             world.DestroyBody(item.body)
                             item.body = None
+                    world.DestroyBody(level.ground.body)
                 in_sling = None
                 TRANS = 0, 0
                 level = levels[level_num + 1]()
@@ -245,7 +245,7 @@ while running:
         if art:
             screen.fill(SKY)
             screen.blit(level.background, (-1 * TRANS[0] * PPM, TRANS[1] * PPM))
-            ground.draw(TRANS)
+            level.ground.draw(TRANS)
             slingshot.draw(TRANS)
             draw_sling(SLING_COLOR, slingshot, TRANS)
             for bird in level.birds:
@@ -262,22 +262,22 @@ while running:
                     item.draw(TRANS)
             if not m_pause:
                 show_text(str(hogs_down) +
-                        "/" + str(level.num_hogs), 720, 100, MAROON, 40)
+                        "/" + str(level.num_hogs), 720, 100, THEME, 40)
                 for each in level_buttons:
                     each.draw()
             else:
                 pygame.draw.rect(screen,WHITE,(420,200,600,500))
-                pygame.draw.rect(screen,MAROON,(430,210,580,480),5)
-                show_text("paused",720,346,MAROON,80)
+                pygame.draw.rect(screen,THEME,(430,210,580,480),5)
+                show_text("paused",720,346,THEME,80)
                 for each in pause_buttons:
                     each.draw()
                 show_text(str(hogs_down) +
-                        "/" + str(level.num_hogs), 940, 260, MAROON, 40)
+                        "/" + str(level.num_hogs), 940, 260, THEME, 40)
 
 
         elif not art:
             screen.fill(BLACK)
-            ground.draw_shape(TRANS)
+            level.ground.draw_shape(TRANS)
             for log in level.logs:
                 if not log.dead:
                     log.draw_shape(TRANS)
@@ -294,7 +294,7 @@ while running:
                 running = False
 
         screen.blit(back_sunset_art, (0,0))
-        show_text("anger birbs!", 720, 225, MAROON, 100)
+        show_text("anger birbs!", 720, 225, THEME, 100)
         for each in main_buttons:
             each.draw()
 

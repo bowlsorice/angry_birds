@@ -10,7 +10,7 @@ BOX = 1
 WHITE = (255,255,255)
 BLACK = (0,0,0)
 MAROON = (128,0,0)
-YELLOW = (255, 255, 102)
+YELLOW = (255, 234, 0)
 BLUE = (165,242,243)
 RED = (255,0,0)
 SKY = (128, 216, 255)
@@ -21,7 +21,8 @@ VIEW = 1440,900
 FPS = 60
 TIME_STEP = 1.0/FPS
 
-SLING_COLOR = MAROON
+SLING_COLOR = YELLOW
+THEME = YELLOW
 
 pygame.init()
 
@@ -58,7 +59,12 @@ hedgehog_art = pygame.image.load("anger_art/hedgehog.png").convert_alpha()
 hedgehog_art = pygame.transform.flip(hedgehog_art, True, False)
 
 ground_art = pygame.image.load("anger_art/ground.png").convert_alpha()
+ground_sunset_art = pygame.image.load("anger_art/ground_sunset.png").convert_alpha()
+ground_fall_art = pygame.image.load("anger_art/ground_fall.png").convert_alpha()
+
+
 slingshot_art = pygame.image.load("anger_art/slingshot.png").convert_alpha()
+
 background_art = pygame.image.load("anger_art/background.png").convert_alpha()
 back_fall_art = pygame.image.load("anger_art/back_fall.png").convert_alpha()
 back_sunset_art = pygame.image.load("anger_art/back_sunset.png").convert_alpha()

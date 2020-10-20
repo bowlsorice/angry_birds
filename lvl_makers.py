@@ -50,7 +50,7 @@ def make_lvl1():
 
     logs = make_logs(log_infos,base)
 
-    lvl1 = Level(logs, base, hogs, birds, background_art)
+    lvl1 = Level(logs, base, hogs, birds, background_art, ground_art)
     return lvl1
 
 
@@ -87,7 +87,7 @@ def make_lvl2():
 
     logs = make_logs(log_infos,base)
 
-    lvl2 = Level(logs, base, hogs, birds, background_art)
+    lvl2 = Level(logs, base, hogs, birds, background_art, ground_art)
     return lvl2
 
 
@@ -111,7 +111,7 @@ def make_lvl3():
                 ((0, 2.5), 0, 1, False)]
     logs = make_logs(log_infos,base)
 
-    lvl3 = Level(logs, base, hogs, birds, back_fall_art)
+    lvl3 = Level(logs, base, hogs, birds, back_fall_art, ground_fall_art)
     return lvl3
 
 def make_lvl4():
@@ -142,5 +142,5 @@ def make_lvl4():
 
     logs = make_logs(log_infos,base)
 
-    lvl4 = Level(logs, base, hogs, birds, back_sunset_art)
+    lvl4 = Level(logs, base, hogs, birds, back_sunset_art, ground__sunset_art)
     return lvl4

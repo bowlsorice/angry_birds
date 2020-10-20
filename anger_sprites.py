@@ -149,13 +149,14 @@ class Log(Scene):
         self.log_shape = log_shape
 
 class Level():
-    def __init__(self,logs,base,hogs,birds,background):
+    def __init__(self,logs,base,hogs,birds,background,ground_art):
         self.background = background
         self.base = base
         self.logs = logs
         self.hogs = hogs
         self.birds = birds
         self.num_hogs = len(hogs)
+        self.ground = Thing(ground_art, (10, 0), 0, BOX, static=True)
 
 class Button():
     def __init__(self,colora,colorb,text,textsize,rect):
