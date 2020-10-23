@@ -169,7 +169,12 @@ class Button():
         pygame.draw.rect(screen,self.colora,self.rect)
         show_text(self.text,self.rect[0]+self.rect[2]/2,
                     self.rect[1]+self.size,self.colorb,self.size)
-class IconButton():
+    def isClicked(self):
+        pos = pygame.mouse.get_pos()
+        return (self.rect.left<pos[0]<self.rect.right
+            and self.rect.top<pos[1]<self.rect.bottom)
+
+class IconButton(Button):
     def __init__(self,img,x,y):
         self.img = img
         self.rect = img.get_rect()

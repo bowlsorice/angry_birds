@@ -56,10 +56,14 @@ pan_to = False
 pan_back = False
 pan_stop = 0
 
-game = True
+game = False
 
-m_main = False
-main_buttons = [Button(SKY,WHITE,"start",40,(620,650,200,75))]
+m_main = True
+main_buttons = []
+start_button = Button(SKY,WHITE,"start",40,(620,550,200,75))
+main_buttons.append(start_button)
+main_level_select = Button(SKY,WHITE,"levels",40,(620,650,200,75))
+main_buttons.append(main_level_select)
 
 m_pause = False
 pause_buttons = []
@@ -70,15 +74,18 @@ pause_buttons.append(unpause)
 pause_buttons.append(quit_to_main)
 pause_buttons.append(pause_level_select)
 
+m_level_select = False
+
 level_buttons = []
-pause_button = IconButton(pause_art,100,100)
+pause_button = IconButton(pause_art, 100, 60)
+rewind_button = IconButton(rewind_art, 200, 60)
 level_buttons.append(pause_button)
+level_buttons.append(rewind_button)
 
 slingshot = Slingshot(slingshot_art, (1.5, 1.4))
 
 levels = [make_lvl1, make_lvl2, make_lvl3]
-level = levels[0]()
-level_num = 0
+level_num = 1
 
 while running:
     if game:
@@ -93,10 +100,25 @@ while running:
                     if in_sling is not None:
                         if in_sling.fix.TestPoint(pos):
                             clicked = True
-                    pixel_pos = pygame.mouse.get_pos()
-                    if (pause_button.rect.left<pixel_pos[0]<pause_button.rect.right
-                        and pause_button.rect.top<pixel_pos[1]<pause_button.rect.bottom):
+                    if pause_button.isClicked():
                         m_pause = True
+                    elif rewind_button.isClicked():
+                        for item in level.hogs + level.logs + level.birds:
+                            if item in level.birds:
+                                world.DestroyBody(item.body)
+                                item.body = None
+                            else:
+                                if not item.dead:
+                                    world.DestroyBody(item.body)
+                                    item.body = None
+                        world.DestroyBody(level.ground.body)
+                        in_sling = None
+                        TRANS = 0, 0
+                        time_shot = -1000
+                        pan_back = False
+                        pan_to = False
+                        level = level = levels[level_num-1]()
+
                 elif event.type == pygame.MOUSEBUTTONUP and clicked:
                     clicked = False
                     in_sling.launch(screen, slingshot, TRANS)
@@ -109,16 +131,26 @@ while running:
                         running = False
             elif m_pause:
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    pos = pygame.mouse.get_pos()
-                    if (unpause.rect.left<pos[0]<unpause.rect.right
-                        and unpause.rect.top<pos[1]<unpause.rect.bottom):
+                    if unpause.isClicked():
                         m_pause = False
-                    elif (quit_to_main.rect.left<pos[0]<quit_to_main.rect.right
-                        and quit_to_main.rect.top<pos[1]<quit_to_main.rect.bottom):
+                    elif quit_to_main.isClicked():
                         game = False
+                        m_pause = False
                         m_main = True
+                        for item in level.hogs + level.logs + level.birds:
+                            if item in level.birds:
+                                world.DestroyBody(item.body)
+                                item.body = None
+                            else:
+                                if not item.dead:
+                                    world.DestroyBody(item.body)
+                                    item.body = None
+                        world.DestroyBody(level.ground.body)
+                        in_sling = None
+                        TRANS = 0, 0
 
-        if not m_pause:
+
+        if not m_pause and not m_main:
             if in_sling == None:
                 birds_not_shot = 0
                 for bird in level.birds:
@@ -225,7 +257,7 @@ while running:
                     pan_back = False
 
             hogs_down = level.num_hogs - len(level.hogs)
-            if hogs_down == level.num_hogs and level_num<len(levels)-1:
+            if hogs_down == level.num_hogs and level_num<len(levels):
                 for item in level.hogs + level.logs + level.birds:
                     if item in level.birds:
                         world.DestroyBody(item.body)
@@ -237,12 +269,15 @@ while running:
                 world.DestroyBody(level.ground.body)
                 in_sling = None
                 TRANS = 0, 0
-                level = levels[level_num + 1]()
+                pan_to = False
+                pan_back = False
+                m_pause = False
+                level = levels[level_num]()
                 level_num += 1
 
 
 
-        if art:
+        if art and not m_main:
             screen.fill(SKY)
             screen.blit(level.background, (-1 * TRANS[0] * PPM, TRANS[1] * PPM))
             level.ground.draw(TRANS)
@@ -275,7 +310,7 @@ while running:
                         "/" + str(level.num_hogs), 940, 260, THEME, 40)
 
 
-        elif not art:
+        elif not art and not m_main:
             screen.fill(BLACK)
             level.ground.draw_shape(TRANS)
             for log in level.logs:
@@ -292,9 +327,22 @@ while running:
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 running = False
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                pos = pygame.mouse.get_pos()
+                if start_button.isClicked():
+                    m_main = False
+                    level = levels[level_num-1]()
+                    time_shot = -1000
+                    game = True
+                elif main_level_select.isClicked():
+                    print("hi")
 
-        screen.blit(back_sunset_art, (0,0))
-        show_text("anger birbs!", 720, 225, THEME, 100)
+
+
+        screen.blit(background_art, (0,0))
+        show_text("anger birbs!", 725, 255, WHITE, 140)
+        show_text("anger birbs!", 720, 255, THEME, 140)
+        show_text("an angry birds clone by caroline hohner", 840, 320, THEME, 30)
         for each in main_buttons:
             each.draw()
 
