@@ -68,13 +68,22 @@ main_buttons.append(main_level_select)
 m_pause = False
 pause_buttons = []
 unpause = Button(THEME,WHITE,"unpause",30,(645,420,150,50))
-quit_to_main = Button(THEME,WHITE,"quit",30,(670,560,100,50))
+quit_from_pause = Button(THEME,WHITE,"quit",30,(670,560,100,50))
 pause_level_select = Button(THEME,WHITE,"level select",30,(605,490,230,50))
 pause_buttons.append(unpause)
-pause_buttons.append(quit_to_main)
+pause_buttons.append(quit_from_pause)
 pause_buttons.append(pause_level_select)
 
 m_level_select = False
+select_buttons = []
+quit_from_select = Button(WHITE,SKY,"quit",30,(870,590,100,60))
+select_buttons.append(quit_from_select)
+select_1 = Button(WHITE,SKY,"1",30,(470,350,60,60))
+select_buttons.append(select_1)
+select_2 = Button(WHITE,SKY,"2",30,(540,350,60,60))
+select_buttons.append(select_2)
+select_3 = Button(WHITE,SKY,"3",30,(610,350,60,60))
+select_buttons.append(select_3)
 
 level_buttons = []
 pause_button = IconButton(pause_art, 100, 60)
@@ -133,10 +142,10 @@ while running:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if unpause.isClicked():
                         m_pause = False
-                    elif quit_to_main.isClicked():
+                    elif (quit_from_pause.isClicked()
+                        or pause_level_select.isClicked()):
                         game = False
                         m_pause = False
-                        m_main = True
                         for item in level.hogs + level.logs + level.birds:
                             if item in level.birds:
                                 world.DestroyBody(item.body)
@@ -148,9 +157,13 @@ while running:
                         world.DestroyBody(level.ground.body)
                         in_sling = None
                         TRANS = 0, 0
+                        if quit_from_pause.isClicked():
+                            m_main = True
+                        else:
+                            m_level_select = True
 
 
-        if not m_pause and not m_main:
+        if not m_pause and not m_main and not m_level_select:
             if in_sling == None:
                 birds_not_shot = 0
                 for bird in level.birds:
@@ -277,7 +290,7 @@ while running:
 
 
 
-        if art and not m_main:
+        if art and not m_main and not m_level_select:
             screen.fill(SKY)
             screen.blit(level.background, (-1 * TRANS[0] * PPM, TRANS[1] * PPM))
             level.ground.draw(TRANS)
@@ -300,6 +313,24 @@ while running:
                         "/" + str(level.num_hogs), 720, 100, THEME, 40)
                 for each in level_buttons:
                     each.draw()
+                if clicked:
+                    posa = in_sling.body.position
+                    posb = slingshot.rect.centerx,slingshot.rect.y
+                    posb = (posb[0]/PPM), (VIEW[1]-posb[1])/PPM
+                    length = (((posb[0]-posa[0])**2+
+                        (posb[1]-posa[1])**2)**(1/2))
+                    reduct = 8
+                    vector = ((posb[0]-posa[0])*reduct,
+                        (posb[1]-posa[1])*reduct)
+                    radius = 8
+                    for i in range(5):
+                        y_vec = vector[1]-(9.8/60)*i
+                        posa = posa[0]+vector[0]/8, posa[1]+y_vec/8
+                        draw_pos = int(posa[0]*PPM), int(VIEW[1]-(posa[1]*PPM))
+                        pygame.draw.circle(screen,WHITE,draw_pos,radius)
+                        radius-=1
+
+
             else:
                 pygame.draw.rect(screen,WHITE,(420,200,600,500))
                 pygame.draw.rect(screen,THEME,(430,210,580,480),5)
@@ -310,7 +341,7 @@ while running:
                         "/" + str(level.num_hogs), 940, 260, THEME, 40)
 
 
-        elif not art and not m_main:
+        elif not art and not m_main and not m_level_select:
             screen.fill(BLACK)
             level.ground.draw_shape(TRANS)
             for log in level.logs:
@@ -335,15 +366,26 @@ while running:
                     time_shot = -1000
                     game = True
                 elif main_level_select.isClicked():
-                    print("hi")
-
-
+                    m_main = False
+                    m_level_select = True
 
         screen.blit(background_art, (0,0))
         show_text("anger birbs!", 725, 255, WHITE, 140)
         show_text("anger birbs!", 720, 255, THEME, 140)
         show_text("an angry birds clone by caroline hohner", 840, 320, THEME, 30)
         for each in main_buttons:
+            each.draw()
+    elif m_level_select:
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                running = False
+        screen.blit(background_art, (0,0))
+        pygame.draw.rect(screen,WHITE,(420,200,600,500))
+        pygame.draw.rect(screen,THEME,(430,210,580,480),5)
+        pygame.draw.rect(screen,SKY,(450,330,540,340))
+
+        show_text("level select",720,280,THEME,70)
+        for each in select_buttons:
             each.draw()
 
 

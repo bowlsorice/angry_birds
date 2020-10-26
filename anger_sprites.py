@@ -67,7 +67,7 @@ class Bird(Thing):
         posb = (posb[0]/PPM), (VIEW[1]-posb[1])/PPM
         length = (((posb[0]-posa[0])**2+
             (posb[1]-posa[1])**2)**(1/2))
-        reduct = 8#/length
+        reduct = 8
         vector = ((posb[0]-posa[0])*reduct,
             (posb[1]-posa[1])*reduct)
         self.body.ApplyLinearImpulse(vector,self.body.position,True)
