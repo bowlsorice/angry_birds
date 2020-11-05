@@ -30,17 +30,25 @@ class Thing():
                     self.img.get_rect().height/(2*PPM))
                 self.fix = self.body.CreatePolygonFixture(box=dimensions,
                     density=density,friction=0.3,restitution=.5)
+        elif shape == RIGHT_TRIANGLE:
+                rect = self.img.get_rect()
+                width = rect.width/PPM
+                height = rect.height/PPM
+                vertices = [(-width/2,-height/2),(width/2,-height/2),(-width/2,height/2)]
+                self.fix = self.body.CreatePolygonFixture(density = density,
+                            vertices = vertices,friction=0.3,
+                            restitution=.5)
     def draw(self,translation):
         angle = self.body.angle * (180/pi)
         r_img = pygame.transform.rotate(self.img,angle)
         center = ((self.body.position[0]-translation[0])*PPM,
             VIEW[1]-((self.body.position[1]-translation[1])*PPM))
-        rect = r_img.get_rect(center = center)
+        rect = r_img.get_rect(center = center) #edit here
         screen.blit(r_img,(rect.topleft))
     def draw_shape(self,translation):
         pos = ((self.body.position[0]-translation[0])*PPM,
             VIEW[1]-((self.body.position[1]-translation[1])*PPM))
-        if self.shape == BOX:
+        if self.shape == BOX or self.shape == RIGHT_TRIANGLE:
             vertices = [(self.body.transform * v)
                 for v in self.fix.shape.vertices]
             vertices = [((v[0]-translation[0])*PPM,
@@ -58,16 +66,26 @@ class Thing():
 
 
 class Bird(Thing):
-    def __init__(self,img,pos,angle):
-        super().__init__(img,pos,angle,CIRCLE,density=4)
+    def __init__(self,pos,angle,tag):
+        self.tag = tag
+        self.impulse_cap = 8
+        self.use_ability = True
+        if tag == "basic":
+            img = basic_art
+        elif tag == "redwing":
+            img = redwing_art
+        elif tag == "bluebird":
+            img = bluebird_art
+        elif tag == "gold":
+            img = gold_art
+            self.impulse_cap = 4
+        super().__init__(img,pos,angle,CIRCLE,density=4)#CIRCLE,density=4)
         self.shot = False
     def launch(self,screen,slingshot,translation):
         posa = self.body.position
         posb = slingshot.rect.centerx,slingshot.rect.y
         posb = (posb[0]/PPM), (VIEW[1]-posb[1])/PPM
-        length = (((posb[0]-posa[0])**2+
-            (posb[1]-posa[1])**2)**(1/2))
-        reduct = 8
+        reduct = self.impulse_cap
         vector = ((posb[0]-posa[0])*reduct,
             (posb[1]-posa[1])*reduct)
         self.body.ApplyLinearImpulse(vector,self.body.position,True)
@@ -140,7 +158,15 @@ class Log(Scene):
                 img = ice_looong_art
             else:
                 img = log_looong_art
-        super().__init__(img,pos,angle,BOX)
+        elif log_shape == 3:
+            if is_ice:
+                img = ice_triangle_art
+            else:
+                img = log_triangle_art
+        if 0<=log_shape<=2:
+            super().__init__(img,pos,angle,BOX)
+        elif log_shape == 3:
+            super().__init__(img,pos,angle,RIGHT_TRIANGLE)
         if is_ice:
             self.frames = [ice_shatter1, ice_shatter2, ice_shatter3]
             self.min_impulse = .8
@@ -182,6 +208,26 @@ class IconButton(Button):
                     self.rect[2], self.rect[3])
     def draw(self):
         screen.blit(self.img, self.rect.topleft)
+
+class SelectButton(Button):
+    def __init__(self, level_num):
+        super().__init__(WHITE,SKY,str(level_num),30,
+                (470+70*(level_num-1),350,60,60))
+        if level_num!=1:
+            self.unlocked = False
+        else:
+            self.unlocked = True
+    def draw(self):
+        if self.unlocked:
+            super().draw()
+        else:
+            pygame.draw.rect(screen,self.colora,self.rect)
+            pygame.draw.rect(screen,self.colorb,
+                            (self.rect[0]+10,self.rect[1]+20,40,30))
+            pygame.draw.circle(screen, self.colorb,
+                                (self.rect.centerx,self.rect.y+20), 10, 2)
+            pygame.draw.rect(screen, self.colora,
+                            (self.rect.x+30,self.rect.y+30,2,10))
 
 
 def show_text(text, x, y, color, size):

@@ -6,6 +6,7 @@ from Box2D import b2ContactListener
 
 CIRCLE = 0
 BOX = 1
+RIGHT_TRIANGLE = 2
 
 WHITE = (255,255,255)
 BLACK = (0,0,0)
@@ -46,14 +47,17 @@ world = world(gravity=(0,-10), doSleep=True, contactListener=myContactListener()
 redwing_art = pygame.image.load("anger_art/redwing.png").convert_alpha()
 bluebird_art = pygame.image.load("anger_art/bluebird.png").convert_alpha()
 basic_art = pygame.image.load("anger_art/basic_bird.png").convert_alpha()
+gold_art = pygame.image.load("anger_art/gold_but_not.png").convert_alpha()
 
 log_long_art = pygame.image.load("anger_art/log_long.png").convert_alpha()
 log_looong_art = pygame.image.load("anger_art/log_looong.png").convert_alpha()
 log_short_art = pygame.image.load("anger_art/log_short.png").convert_alpha()
+log_triangle_art = pygame.image.load("anger_art/triangle.png").convert_alpha()
 
 ice_long_art = pygame.image.load("anger_art/ice_long.png").convert_alpha()
 ice_looong_art = pygame.image.load("anger_art/ice_looong.png").convert_alpha()
 ice_short_art = pygame.image.load("anger_art/ice_short.png").convert_alpha()
+ice_triangle_art = pygame.image.load("anger_art/ice_triangle.png").convert_alpha()
 
 hedgehog_art = pygame.image.load("anger_art/hedgehog.png").convert_alpha()
 hedgehog_art = pygame.transform.flip(hedgehog_art, True, False)

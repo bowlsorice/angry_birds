@@ -20,12 +20,9 @@ def make_lvl1():
     base = 12
 
     birds = []
-    basic = Bird(basic_art, (1.5, .5), 0)
-    birds.append(basic)
-    redwing = Bird(redwing_art, (.5, .5), 0)
-    birds.append(redwing)
-    bluebird = Bird(bluebird_art, (1, .5), 0)
-    birds.append(bluebird)
+    birds.append(Bird((1.5, .5), 0, "bluebird"))
+    birds.append(Bird((.5, .5), 0, "bluebird"))
+    birds.append(Bird((1, .5), 0, "bluebird"))
 
     hog_infos = [((0.08, 1.90), 0),
                 ((-0.09, 4.21), 0)]
@@ -50,20 +47,56 @@ def make_lvl1():
 
     logs = make_logs(log_infos,base)
 
-    lvl1 = Level(logs, base, hogs, birds, background_art, ground_art)
-    return lvl1
+    lvl = Level(logs, base, hogs, birds, background_art, ground_art)
+    return lvl
 
 
 def make_lvl2():
     base = 12
 
     birds = []
-    basic = Bird(basic_art, (1.5, .5), 0)
-    birds.append(basic)
-    redwing = Bird(redwing_art, (.5, .5), 0)
-    birds.append(redwing)
-    bluebird = Bird(bluebird_art, (1, .5), 0)
-    birds.append(bluebird)
+    birds.append(Bird((1.5, .5), 0, "bluebird"))
+    birds.append(Bird((1, .5), 0, "bluebird"))
+    birds.append(Bird((.5, .5), 0, "redwing"))
+
+    hog_infos = [((0.0612, 2.8), 0),
+                ((-1.4288, 4), 0),
+                ((0.0818, 6), 0),
+                ((1.8102, 1), 0)]
+
+    hogs = make_hogs(hog_infos, base)
+
+    log_infos = [((-1.3566, 2.1151), -90.03288986532586, 2, False),
+                ((-0.8029, 0.9677), -54.13824794657898, 0, True),
+                ((0.0301, 1.3148),-90.05342141397091, 1, True),
+                ((-1.894, 0.9757), -123.11069005337336, 0, True),
+                ((0.0306, 2.2793), -0.0949716326346922, 1, False),
+                ((-1.4297, 3.8801), -0.026151742122659163, 1, False),
+                ((-0.4198, 4.0448), -90.06049065976187, 2, True),
+                ((0.5609, 4.043), -90.04615409269401, 2, True),
+                ((-1.9302, 4.4984), -89.98634895632138, 0, True),
+                ((-0.8407, 4.499), -89.88287842058487, 0, True),
+                ((-1.4097, 5.1138), 0.04023994943836839, 1, False),
+                ((0.0703, 5.8089), -0.09910239630856209, 1, False),
+                ((1.8201, 0.6689), 5.207389359996375e-07, 1, False),
+                ((1.2799, 1.6361), -89.99644397591466, 1, True),
+                ((2.3515, 1.6374), -90.05231492332537, 1, True),
+                ((1.7712, 2.6036), -0.049182267887501206, 1, False)]
+
+    logs = make_logs(log_infos,base)
+
+    lvl = Level(logs, base, hogs, birds, background_art, ground_art)
+    return lvl
+
+
+
+def make_lvl3():
+    base = 12
+
+    birds = []
+    birds.append(Bird((1.5, .5), 0, "gold"))
+    birds.append(Bird((.5, .5), 0, "gold"))
+    birds.append(Bird((1, .5), 0, "gold"))
 
     hog_infos = [((0.01, 0.67), 0),
                 ((-0.46, 2.81), 0),
@@ -87,24 +120,22 @@ def make_lvl2():
 
     logs = make_logs(log_infos,base)
 
-    lvl2 = Level(logs, base, hogs, birds, back_fall_art, ground_fall_art)
-    return lvl2
+    lvl = Level(logs, base, hogs, birds, back_fall_art, ground_fall_art)
+    return lvl
 
 
-def make_lvl3():
+def make_lvl4():
     base = 12
 
     birds = []
-    basic = Bird(basic_art, (1.5, .5), 0)
-    birds.append(basic)
-    redwing = Bird(redwing_art, (.5, .5), 0)
-    birds.append(redwing)
-    bluebird = Bird(bluebird_art, (1, .5), 0)
-    birds.append(bluebird)
+    birds.append(Bird((1.5, .5), 0, "bluebird"))
+    birds.append(Bird((.5, .5), 0, "redwing"))
+    birds.append(Bird((1, .5), 0, "gold"))
 
-    hog_infos = [((-0.31, 1, 4), 0),
-                ((0.02, 1, 4), 0),
-                ((0.35, 1, 4), 0)]
+
+    hog_infos = [((-0.31, 1), 0),
+                ((0.02, 1), 0),
+                ((0.35, 1), 0)]
     hogs = make_hogs(hog_infos, base)
 
     log_infos = [((-1.04, 1.315), -90.00974235422868, 1, False),
@@ -119,5 +150,89 @@ def make_lvl3():
 
     logs = make_logs(log_infos,base)
 
-    lvl4 = Level(logs, base, hogs, birds, back_sunset_art, ground_sunset_art)
-    return lvl4
+    lvl = Level(logs, base, hogs, birds, back_fall_art, ground_fall_art)
+    return lvl
+
+def make_lvl5():
+    base = 12
+
+    birds = []
+    birds.append(Bird((1.5, .5), 0, "bluebird"))
+    birds.append(Bird((.5, .5), 0, "redwing"))
+    birds.append(Bird((1, .5), 0, "gold"))
+
+    hog_infos = [((0.0013, 1.5856), 0),
+                ((1.9104, 1.585), 0),
+                ((-0.0813, 4.5162), 0)]
+    hogs = make_hogs(hog_infos, base)
+
+    log_infos = [((1.2217, 1.3145), -269.9982794755567, 1, False),
+                ((2.6308, 1.3151), -269.94841909461564, 1, False),
+                ((-1.178, 2.1148), -90.03327918610854, 2, False),
+                ((-1.1205, 3.8786), 0.25427289503904277, 0, False),
+                ((2.001, 2.2801), 0.128979357955595, 2, False),
+                ((1.2386, 3.2423), -269.7467372688035, 1, False),
+                ((-0.0318, 4.197), 0.4147801260589369, 2, False),
+                ((-0.0, 0.9656), -90.22198365249764, 0, True),
+                ((1.91, 0.965), -90.00013227806647, 0, True),
+                ((-0.7628, 4.8056), -269.62275567498943, 3, True),
+                ((0.6878, 4.8159), 0.4973293921613089, 3, True),
+                ((3.25, 0.965), -3.7696194635742624e-06, 3, True),
+                ((1.8563, 2.8945), 0.13759725575936546, 3, True),
+                ((-0.0702, 5.4236), 0.291228513997467, 1, True),
+                ((-0.0401, 6.0382), -89.78957120633333, 0, False)]
+
+
+    logs = make_logs(log_infos,base)
+
+    lvl = Level(logs, base, hogs, birds, back_sunset_art, ground_sunset_art)
+    return lvl
+
+def make_lvl6():
+    base = 12
+
+    birds = []
+    birds.append(Bird((1.5, .5), 0, "redwing"))
+    birds.append(Bird((.5, .5), 0, "redwing"))
+    birds.append(Bird((1, .5), 0, "redwing"))
+
+    hog_infos = [((-0.0276, 0.6739), 0),
+                ((-0.46, 2.9136), 0),
+                ((0.2897, 2.9136), 0),
+                ((-3.19, 0.6717), 0),
+                ((2.97, 0.6717), 0)]
+    hogs = make_hogs(hog_infos, base)
+
+    log_infos =  [((1.8999, 1.3151), -89.95663080324266, 1, False),
+                    ((-1.9801, 1.3152), -90.11024175767623, 1, False),
+                    ((1.4305, 1.3149), -90.00161442911636, 1, False),
+                    ((-1.5848, 1.3149), -90.016183222616, 1, False),
+                    ((1.6098, 2.2797), 0.06204351742968768, 0, True),
+                    ((-1.8205, 2.2799), -0.09895852210895548, 0, True),
+                    ((0.5497, 0.9669), -270.2382376814776, 3, True),
+                    ((-0.5774, 0.965), -4.243805663923257e-06, 3, True),
+                    ((-1.1207, 3.5584), -90.00112265549612, 1, False),
+                    ((0.9486, 3.5585), -90.0027209197619, 1, False),
+                    ((-0.076, 2.5937), 0.0010355643795515548, 2, True),
+                    ((-0.1596, 4.5233), 0.0050693335517080695, 2, True),
+                    ((-1.3268, 5.1382), -89.99596586267276, 0, False),
+                    ((-0.6857, 5.1383), -89.99651227780636, 0, False),
+                    ((-0.0802, 5.1383), -89.9973250703176, 0, False),
+                    ((1.1917, 5.1384), -89.99892333458338, 0, False),
+                    ((0.5319, 5.1383), -89.99800125904542, 0, False),
+                    ((-3.7298, 0.965), -90.00006397617477, 0, False),
+                    ((3.5902, 0.965), -89.99996152333722, 0, False),
+                    ((-2.5, 0.965), -89.99996152333722, 0, True),
+                    ((2.3098, 0.965), -90.00004348560726, 0, True),
+                    ((2.9592, 1.58), 7.896058527574881e-05, 1, True),
+                    ((-3.0999, 1.58), 4.1833143433032694e-05, 1, True),
+                    ((-2.6183, 2.1951), 0.009032961029164304, 3, False),
+                    ((-3.5335, 2.1952), -269.96303569943944, 3, False),
+                    ((2.5191, 2.195), -269.99975479641745, 3, False),
+                    ((3.4486, 2.1965), 0.19633622895102334, 3, False)]
+
+
+    logs = make_logs(log_infos,base)
+
+    lvl = Level(logs, base, hogs, birds, back_sunset_art, ground_sunset_art)
+    return lvl

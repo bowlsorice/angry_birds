@@ -5,6 +5,7 @@ from anger_sprites import *
 running = True
 TRANS = 0, 0
 ice = False
+sleep = False
 
 
 
@@ -23,10 +24,14 @@ add_log2 = Button(WHITE,BLACK,"add med log",20,(1220,100,180,40))
 buttons.append(add_log2)
 add_log3 = Button(WHITE,BLACK,"add long log",20,(1220,150,180,40))
 buttons.append(add_log3)
+add_log4 = Button(WHITE,BLACK,"add tri log",20,(1220,350,180,40))
+buttons.append(add_log4)
 ice_button = Button(BLUE,WHITE,"ice",20,(1220,200,180,40))
 buttons.append(ice_button)
 add_hog = Button(WHITE,BLACK,"add hog",20,(1220,250,180,40))
 buttons.append(add_hog)
+all_sleep = Button(WHITE, BLACK, "sleep",20,(1220,300,180,40))
+buttons.append(all_sleep)
 
 ground = Thing(ground_art, (10, 0), 0, BOX, static=True)
 items = []
@@ -66,28 +71,34 @@ while running:
 
         elif event.type == pygame.MOUSEBUTTONDOWN:
             pos = pygame.mouse.get_pos()
-            if (add_log1.rect.left<pos[0]<add_log1.rect.right
-                and add_log1.rect.top<pos[1]<add_log1.rect.bottom):
+            if add_log1.isClicked():
                 items.append(Log((1, 5), 0, 0, ice))
-            elif (add_log2.rect.left<pos[0]<add_log2.rect.right
-                and add_log2.rect.top<pos[1]<add_log2.rect.bottom):
+            elif add_log2.isClicked():
                 items.append(Log((1, 5), 0, 1, ice))
-            elif (add_log3.rect.left<pos[0]<add_log3.rect.right
-                and add_log3.rect.top<pos[1]<add_log3.rect.bottom):
+            elif add_log3.isClicked():
                 items.append(Log((1, 5), 0, 2, ice))
-            elif (ice_button.rect.left<pos[0]<ice_button.rect.right
-                and ice_button.rect.top<pos[1]<ice_button.rect.bottom):
+            elif add_log4.isClicked():
+                items.append(Log((1,5), 0, 3, ice))
+            elif ice_button.isClicked():
                 if ice:
                     ice = False
                     ice_button.colora = BLUE
                     ice_button.colorb = WHITE
+                    ice_button.text = "ice"
                 elif not ice:
                     ice = True
                     ice_button.colora = WHITE
                     ice_button.colorb = BLACK
-            elif (add_hog.rect.left<pos[0]<add_hog.rect.right
-                and add_hog.rect.top<pos[1]<add_hog.rect.bottom):
+                    ice_button.text = "wood"
+            elif add_hog.isClicked():
                 items.append(Hog((1, 5), 0))
+            elif all_sleep.isClicked():
+                if not sleep:
+                    sleep = True
+                    all_sleep.text = "wake"
+                elif sleep:
+                    sleep = False
+                    all_sleep.text = "sleep"
             for item in items:
                 if not clicked.get(item):
                     clicked[item] = item.fix.TestPoint(get_world_pos())
@@ -101,6 +112,12 @@ while running:
         if item.body.position[1]<0:
             world.DestroyBody(item.body)
             items.remove(item)
+        if sleep:
+            for item in items:
+                item.body.awake = False
+        else:
+            for item in items:
+                item.body.awake = True
     for item in items:
         if clicked.get(item):
             angle = item.body.angle
@@ -132,7 +149,7 @@ for item in items:
                         item.body.angle*(180/pi), item.log_shape, item.is_ice))
     elif type(item) == Hog:
         hog_infos.append(((round(item.body.position[0]-7.2,4),
-                        round(item.body.position[1]),4),0))
+                        (round(item.body.position[1],4))),0))
 print("logs: "+str(log_infos))
 print("hogs: "+str(hog_infos))
 pygame.quit()

@@ -7,6 +7,8 @@ TRANS = 0, 0
 
 running = True
 art = True
+draw_anyways = False
+test_mode = True
 
 pygame.init()
 
@@ -49,6 +51,7 @@ def draw_sling(color, slingshot, translation):
 
 
 in_sling = None
+last_shot = None
 time_shot = -1000
 clicked = False
 
@@ -78,12 +81,16 @@ m_level_select = False
 select_buttons = []
 quit_from_select = Button(WHITE,SKY,"quit",30,(870,590,100,60))
 select_buttons.append(quit_from_select)
-select_1 = Button(WHITE,SKY,"1",30,(470,350,60,60))
-select_buttons.append(select_1)
-select_2 = Button(WHITE,SKY,"2",30,(540,350,60,60))
-select_buttons.append(select_2)
-select_3 = Button(WHITE,SKY,"3",30,(610,350,60,60))
-select_buttons.append(select_3)
+select_level_nums = []
+num = 1
+for i in range(6):
+    button = SelectButton(num)
+    select_level_nums.append(button)
+    select_buttons.append(button)
+    num+=1
+    if test_mode:
+        button.unlocked = True
+
 
 level_buttons = []
 pause_button = IconButton(pause_art, 100, 60)
@@ -93,7 +100,7 @@ level_buttons.append(rewind_button)
 
 slingshot = Slingshot(slingshot_art, (1.5, 1.4))
 
-levels = [make_lvl1, make_lvl2, make_lvl3]
+levels = [make_lvl1, make_lvl2, make_lvl3, make_lvl4, make_lvl5, make_lvl6]
 level_num = 1
 
 while running:
@@ -132,12 +139,35 @@ while running:
                     clicked = False
                     in_sling.launch(screen, slingshot, TRANS)
                     in_sling.shot = True
+                    last_shot = in_sling
                     in_sling = None
                     time_shot = pygame.time.get_ticks()
                     pan_to = True
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         running = False
+                    elif event.key == pygame.K_SPACE:
+                        if last_shot.use_ability:
+                            if last_shot.tag == "redwing" and last_shot.use_ability:
+                                last_shot.body.ApplyLinearImpulse(
+                                            (last_shot.body.linearVelocity[0]*1.25,
+                                            last_shot.body.linearVelocity[1]*1.25),
+                                            last_shot.body.position, True)
+                            elif last_shot.tag == "gold" and last_shot.use_ability:
+                                birda = Bird((last_shot.body.position[0],
+                                            last_shot.body.position[1]+.1), 0, "gold")
+                                birda.body.linearVelocity = last_shot.body.linearVelocity[0],last_shot.body.linearVelocity[1]+3
+                                level.birds.append(birda)
+                                birda.shot = True
+                                birdb = Bird((last_shot.body.position[0],
+                                            last_shot.body.position[1]-.1), 0, "gold")
+                                birdb.body.linearVelocity = last_shot.body.linearVelocity[0],last_shot.body.linearVelocity[1]-3
+                                level.birds.append(birdb)
+                                birdb.shot = True
+
+                            last_shot.use_ability = False
+
+
             elif m_pause:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if unpause.isClicked():
@@ -154,6 +184,8 @@ while running:
                                 if not item.dead:
                                     world.DestroyBody(item.body)
                                     item.body = None
+                        pan_to = False
+                        pan_back = False
                         world.DestroyBody(level.ground.body)
                         in_sling = None
                         TRANS = 0, 0
@@ -181,6 +213,7 @@ while running:
                         else:
                             i += 1
             else:
+                in_sling.body.awake = False
                 if clicked:
                     posa = pygame.mouse.get_pos()
                     posa = ((posa[0] / PPM) + TRANS[0],
@@ -196,8 +229,7 @@ while running:
                         move = (posb[0] - (posb[0] - posa[0]) * reduct,
                                 posb[1] - (posb[1] - posa[1]) * reduct)
                         in_sling.body.transform = (move, in_sling.body.angle)
-                else:
-                    in_sling.body.awake = False
+
 
             for item in level.hogs + level.logs:
                 if not item.dead:
@@ -286,6 +318,7 @@ while running:
                 pan_back = False
                 m_pause = False
                 level = levels[level_num]()
+                select_level_nums[level_num].unlocked = True
                 level_num += 1
 
 
@@ -296,6 +329,16 @@ while running:
             level.ground.draw(TRANS)
             slingshot.draw(TRANS)
             draw_sling(SLING_COLOR, slingshot, TRANS)
+            if draw_anyways:
+                level.ground.draw_shape(TRANS)
+                for log in level.logs:
+                    if not log.dead:
+                        log.draw_shape(TRANS)
+                for bird in level.birds:
+                    bird.draw_shape(TRANS)
+                for hog in level.hogs:
+                    if not hog.dead:
+                        hog.draw_shape(TRANS)
             for bird in level.birds:
                 bird.draw(TRANS)
             for item in level.logs+level.hogs:
@@ -323,8 +366,8 @@ while running:
                     vector = ((posb[0]-posa[0])*reduct,
                         (posb[1]-posa[1])*reduct)
                     radius = 8
-                    for i in range(5):
-                        y_vec = vector[1]-(9.8/60)*i
+                    for i in range(6):
+                        y_vec = vector[1]-(10/60)*i
                         posa = posa[0]+vector[0]/8, posa[1]+y_vec/8
                         draw_pos = int(posa[0]*PPM), int(VIEW[1]-(posa[1]*PPM))
                         pygame.draw.circle(screen,WHITE,draw_pos,radius)
@@ -359,7 +402,6 @@ while running:
             if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 running = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                pos = pygame.mouse.get_pos()
                 if start_button.isClicked():
                     m_main = False
                     level = levels[level_num-1]()
@@ -379,6 +421,19 @@ while running:
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 running = False
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if quit_from_select.isClicked():
+                    m_level_select = False
+                    m_main = True
+                for i in range(len(select_level_nums)):
+                    if (select_level_nums[i].isClicked()
+                        and select_level_nums[i].unlocked):
+                        m_level_select = False
+                        level = levels[i]()
+                        level_num = i+1
+                        time_shot = -1000
+                        game = True
+
         screen.blit(background_art, (0,0))
         pygame.draw.rect(screen,WHITE,(420,200,600,500))
         pygame.draw.rect(screen,THEME,(430,210,580,480),5)
