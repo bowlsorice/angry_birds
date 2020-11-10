@@ -8,7 +8,7 @@ TRANS = 0, 0
 running = True
 art = True
 draw_anyways = False
-test_mode = True
+test_mode = False
 
 pygame.init()
 
@@ -103,6 +103,9 @@ slingshot = Slingshot(slingshot_art, (1.5, 1.4))
 levels = [make_lvl1, make_lvl2, make_lvl3, make_lvl4, make_lvl5, make_lvl6]
 level_num = 1
 
+pygame.mixer.music.load(track)
+pygame.mixer.music.play(-1)
+
 while running:
     if game:
         for event in pygame.event.get():
@@ -164,7 +167,7 @@ while running:
                                 birdb.body.linearVelocity = last_shot.body.linearVelocity[0],last_shot.body.linearVelocity[1]-3
                                 level.birds.append(birdb)
                                 birdb.shot = True
-
+                            pygame.mixer.Sound.play(squack)
                             last_shot.use_ability = False
 
 
@@ -238,6 +241,7 @@ while running:
 
             world.Step(TIME_STEP / 2, 5, 5)
             world.Step(TIME_STEP / 2, 5, 5)
+
 
             alive = []
             for item in level.hogs + level.logs:

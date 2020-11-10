@@ -69,15 +69,17 @@ class Bird(Thing):
     def __init__(self,pos,angle,tag):
         self.tag = tag
         self.impulse_cap = 8
-        self.use_ability = True
+        self.use_ability = False
         if tag == "basic":
             img = basic_art
         elif tag == "redwing":
             img = redwing_art
+            self.use_ability = True
         elif tag == "bluebird":
             img = bluebird_art
         elif tag == "gold":
             img = gold_art
+            self.use_ability = True
             self.impulse_cap = 4
         super().__init__(img,pos,angle,CIRCLE,density=4)#CIRCLE,density=4)
         self.shot = False
@@ -137,6 +139,10 @@ class Hog(Scene):
         self.min_impulse = .6
         super().__init__(hedgehog_art, pos, angle, CIRCLE, density=4)
         self.frames = [puff1, puff2, puff3]
+    def kill(self):
+        super().kill()
+        pygame.mixer.Sound.play(snort)
+
 
 
 class Log(Scene):
@@ -173,6 +179,13 @@ class Log(Scene):
         else:
             self.frames = [shatter1, shatter2, shatter3]
         self.log_shape = log_shape
+    def kill(self):
+        super().kill()
+        if not self.is_ice:
+            pygame.mixer.Sound.play(smash)
+        else:
+            pygame.mixer.Sound.play(smash_ice)
+
 
 class Level():
     def __init__(self,logs,base,hogs,birds,background,ground_art):
@@ -197,8 +210,11 @@ class Button():
                     self.rect[1]+self.size,self.colorb,self.size)
     def isClicked(self):
         pos = pygame.mouse.get_pos()
-        return (self.rect.left<pos[0]<self.rect.right
+        clicked = (self.rect.left<pos[0]<self.rect.right
             and self.rect.top<pos[1]<self.rect.bottom)
+        if clicked:
+            pygame.mixer.Sound.play(click)
+        return clicked
 
 class IconButton(Button):
     def __init__(self,img,x,y):

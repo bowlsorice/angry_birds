@@ -30,6 +30,14 @@ pygame.init()
 screen = pygame.display.set_mode((0,0),pygame.FULLSCREEN)
 clock = pygame.time.Clock()
 
+track = 'guitar_music.mp3'
+click = pygame.mixer.Sound('click.wav')
+snort = pygame.mixer.Sound('snort.wav')
+smash = pygame.mixer.Sound('smash.wav')
+smash_ice = pygame.mixer.Sound('smash_ice.wav')
+squack = pygame.mixer.Sound('squack.wav')
+
+
 class myContactListener(b2ContactListener):
     def __init__(self):
         b2ContactListener.__init__(self)
