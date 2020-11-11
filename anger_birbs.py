@@ -167,7 +167,7 @@ while running:
                                 birdb.body.linearVelocity = last_shot.body.linearVelocity[0],last_shot.body.linearVelocity[1]-3
                                 level.birds.append(birdb)
                                 birdb.shot = True
-                            pygame.mixer.Sound.play(squack)
+                            pygame.mixer.Sound.play(chirp)
                             last_shot.use_ability = False
 
 
@@ -199,6 +199,9 @@ while running:
 
 
         if not m_pause and not m_main and not m_level_select:
+            for bird in level.birds:
+                if not bird.shot:
+                    bird.body.awake = False
             if in_sling == None:
                 birds_not_shot = 0
                 for bird in level.birds:

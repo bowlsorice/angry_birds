@@ -35,7 +35,7 @@ click = pygame.mixer.Sound('click.wav')
 snort = pygame.mixer.Sound('snort.wav')
 smash = pygame.mixer.Sound('smash.wav')
 smash_ice = pygame.mixer.Sound('smash_ice.wav')
-squack = pygame.mixer.Sound('squack.wav')
+chirp = pygame.mixer.Sound('chirp.wav')
 
 
 class myContactListener(b2ContactListener):
